@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css" />
+  <link rel="stylesheet" href="../../styles/page.css" />
+</head>
+<body>
+  <div class="addBrand-container" id="member-add-app">
+    <div class="container">
+      <el-form
+        ref="ruleForm"
+        :model="ruleForm"
+        :rules="rules"
+        :inline="false"
+        label-width="180px"
+        class="demo-ruleForm"
+      >
+
+        <el-form-item
+          label="员工姓名:"
+          prop="name"
+        >
+          <el-input
+            v-model="ruleForm.name"
+            placeholder="请输入员工姓名"
+            maxlength="20"
+            id="name"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item
+            label="账号:"
+            prop="userName"
+        >
+          <el-input
+            v-model="ruleForm.userName"
+            placeholder="请输入账号"
+            maxlength="20"
+            id="userName"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item
+          label="密码:"
+          prop="password"
+        >
+          <el-input
+            v-model="ruleForm.password"
+            placeholder="请输入密码"
+            maxlength="20"
+            id="password"
+          ></el-input>
+        </el-form-item>
+
+
+        <el-form-item
+            label="部门:"
+            prop="department"
+        >
+          <el-select v-model="ruleForm.departmentId" placeholder="请选择部门" id = "department" >
+              <el-option
+                v-for="dep in departments"
+                :key="dep.id"
+                :label="dep.name"
+                :value="dep.id">
+              </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item
+          label="职位:"
+          prop="jobTitle"
+        >
+        <el-select v-model="ruleForm.jobTitleId" placeholder="请选择职位" id = "jobTitle">
+          <el-option
+                  v-for="jobTitle in jobTitles"
+                  :key="jobTitle.id"
+                  :label="jobTitle.name"
+                  :value="jobTitle.id">
+          </el-option>
+        </el-select>
+        </el-form-item>
+
+        <el-form-item
+                label="状态:"
+                prop="status"
+        >
+          <el-select v-model="ruleForm.status" placeholder="请选择状态" id = "status">
+            <el-option
+                    v-for="status in statuss"
+                    :key="status.id"
+                    :label="status.label"
+                    :value="status.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <div class="subBox address">
+          <el-form-item>
+            <el-button  @click="goBack()">
+              取消
+            </el-button>
+            <el-button
+              v-if="actionType == 'add'"
+              type="primary"
+              class="continue"
+              @click="submitForm('ruleForm', false)"
+            >
+              保存
+            </el-button>
+            <el-button
+              type="primary"
+              @click="submitForm('ruleForm', true)"
+            >
+              保存并继续添加
+            </el-button>
+          </el-form-item>
+        </div>
+      </el-form>
+    </div>
+  </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="../../plugins/vue/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="../../plugins/element-ui/index.js"></script>
+    <!-- 引入axios -->
+    <script src="../../plugins/axios/axios.min.js"></script>
+    <script src="../../js/global.js"></script>
+    <script src="../../js/request.js"></script>
+    <script src="../../api/employee.js"></script>
+    <script src="../../api/jobTitle.js"></script>
+    <script src="../../api/department.js"></script>
+    <script src="../../js/validate.js"></script>
+    <script>
+      new Vue({
+        el: '#member-add-app',
+        data() {
+          return {
+            userInfo: {},
+            // 该id是判断要更新用户的id
+            id: '',
+            actionType : '',
+            // jobTitles: [
+            //   { id: 1, label: 'job1', value: 'option1' },
+            //   { id: 2, label: 'job2', value: 'option2' },
+            //   { id: 3, label: 'job3', value: 'option3' }
+            // ],
+            jobTitles: [],
+            // departments: [
+            //   { id: 1, departmentName: '部门1', departmentId: 'option1' },
+            //   { id: 2, departmentName: '部门2', departmentId: 'option2' },
+            //   { id: 3, departmentName: '部门3', departmentId: 'option3' }
+            // ],
+            departments: [],
+            statuss: [
+              { id: 0, label: '禁用', value: 0 },
+              { id: 1, label: '使用', value: 1 },
+            ],
+
+            ruleForm : {
+                name: '',
+                departmentId: '',
+                status: '',
+                jobTitleId: '',
+                userName: '',
+                password: ''
+            }
+          }
+        },
+        computed: {
+          rules () {
+            return {
+              //账号
+              userName: [{required: true, 'validator': checkUserName, trigger: 'blur'}],
+              // 密码
+              password: [{required: true, 'validator': checkPassword, trigger: 'blur'}],
+              //姓名
+              name: [{ required: true, 'validator': checkName, 'trigger': 'blur' }],
+              status: [{ required: true, 'validator': checkStatus, 'trigger': 'blur' }],
+              department: [{ 'required': true, 'validator': checkDepartment, 'trigger': 'blur' }],
+              jobTitle: [{ 'required': true, 'validator': checkJobTitle, 'trigger': 'blur' }]
+            }
+          }
+        },
+        created() {
+          this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+          // 查询可以选择的部门（不高于当前用户所在部门）
+          queryLimitDepartment(this.userInfo.departmentId).then(res => {
+            if (String(res.code) === '1') {
+              this.departments = res.data
+            } else {
+              this.$message.error(res.msg || '操作失败')
+            }
+          });
+
+          // 查询可以选择的职位（不高于当前用户拥有的职位）
+          queryLimitJobTitles(this.userInfo.jobTitleId).then(res => {
+            if (String(res.code) === '1') {
+              this.jobTitles = res.data
+            } else {
+              this.$message.error(res.msg || '操作失败')
+            }
+          });
+
+          this.id = requestUrlParam('id')
+          this.actionType = this.id ? 'edit' : 'add'
+          if (this.id) {
+            this.init()
+          } else {
+            temp = localStorage.getItem("employeeRuleForm")
+            if (temp != null) this.ruleForm = JSON.parse(temp);
+          }
+
+        },
+
+        mounted() {
+        },
+        methods: {
+          async init () {
+            queryEmployeeById(this.id).then(res => {
+              if (String(res.code) === '1') {
+                this.ruleForm = res.data
+              } else {
+                this.$message.error(res.msg || '操作失败')
+              }
+            })
+          },
+          submitForm (formName, st) {
+            this.$refs[formName].validate((valid) => {
+              if (valid) {
+                // 只保存
+                if (!st){
+                  localStorage.setItem("employeeRuleForm",JSON.stringify(this.ruleForm))
+                }else{
+                  // 提交
+                  const params = {
+                    ...this.ruleForm,
+                    'id': this.id
+                  }
+                  localStorage.removeItem("employeeRuleForm");
+                  addEmployee(params).then(res => {
+                    let retMsg;
+                    if (res.code === 1) {
+                      retMsg = this.id ? '员工信息修改成功！':'员工添加成功！'
+                      this.$message.success(retMsg);
+
+                      setTimeout(() => {
+                        this.goBack();
+                      }, 2000);
+
+                    } else {
+                      this.$message.error(res.msg || '操作失败')
+                    }
+                  }).catch(err => {
+                    this.$message.error('请求出错了：' + err)
+                  })
+                }
+              } else {
+                console.log('error submit!!')
+                return false
+              }
+            })
+          },
+          goBack(){
+            window.parent.menuHandle({
+              id: '1',
+              url: './employee/list.html',
+              name: '员工管理'
+            },false)
+          }
+        }
+      })
+    </script>
+</body>
+</html>

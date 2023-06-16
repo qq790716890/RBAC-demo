@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- 引入样式 -->
+  <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+  <link rel="stylesheet" href="../../styles/common.css" />
+  <link rel="stylesheet" href="../../styles/page.css" />
+</head>
+<body>
+  <div class="addBrand-container" id="member-add-app">
+    <div class="container">
+      <el-form
+        ref="ruleForm"
+        :model="ruleForm"
+        :rules="rules"
+        :inline="false"
+        label-width="180px"
+        class="demo-ruleForm"
+      >
+
+        <el-form-item
+          label="职位名称:"
+          prop="name"
+        >
+          <el-input
+            v-model="ruleForm.name"
+            placeholder="请输入职位名称"
+            maxlength="20"
+            id="name"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item
+            label="优先级:"
+            prop="rank"
+        >
+          <el-input
+            v-model="ruleForm.rank"
+            placeholder="请设置职位优先级，越小优先级越高"
+            maxlength="20"
+            id="rank"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item
+          label="描述:"
+          prop="description"
+        >
+          <el-input
+            v-model="ruleForm.description"
+            placeholder="请输入职位描述"
+            maxlength="20"
+            id="description"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item
+                label="权限:"
+                prop="permissions"
+        >
+          <el-cascader-panel
+              ref="myCascade"
+              v-model="selectedOptions"
+              :options="options"
+              :props="{ multiple: true}"
+              style="width: 100%;"
+              clearable
+              class="custom-cascader"
+              placeholder="请选择"
+              @change="handleSelectionChange"
+          >
+
+          </el-cascader-panel>
+
+        </el-form-item>
+
+
+
+        <div class="subBox address">
+          <el-form-item>
+            <el-button  @click="goBack()">
+              取消
+            </el-button>
+            <el-button
+              v-if="actionType == 'add'"
+              type="primary"
+              class="continue"
+              @click="submitForm('ruleForm', false)"
+            >
+              保存
+            </el-button>
+            <el-button
+              type="primary"
+              @click="submitForm('ruleForm', true)"
+            >
+              保存并提交
+            </el-button>
+          </el-form-item>
+        </div>
+      </el-form>
+    </div>
+  </div>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="../../plugins/vue/vue.js"></script>
+    <!-- 引入组件库 -->
+    <script src="../../plugins/element-ui/index.js"></script>
+    <!-- 引入axios -->
+    <script src="../../plugins/axios/axios.min.js"></script>
+    <script src="../../js/global.js"></script>
+    <script src="../../js/request.js"></script>
+    <script src="../../api/jobTitle.js"></script>
+    <script src="../../js/validate.js"></script>
+    <script>
+      new Vue({
+        el: '#member-add-app',
+        data() {
+          return {
+            common_permissions: [
+              {
+                value: 'READ',
+                label: '读',
+              },
+              {
+                value: 'INSERT',
+                label: '增',
+              },
+              {
+                value: 'UPDATE',
+                label: '改',
+              },
+              {
+                value: 'DELETE',
+                label: '删',
+              }
+            ],
+
+            options: [
+            ],
+
+            // [['DEPARTMENT_', 'READ'], ['EMPLOYEE_', 'READ']],  这样的形式
+            selectedOptions: [],
+            userHasPermissions: [],
+            userInfo: {},
+            id: '',
+            actionType : '',
+            ruleForm : {
+                name: '',
+                rank: '',
+                description: '',
+            }
+          }
+        },
+        computed: {
+          rules () {
+            return {
+              name: [{ required: true, 'validator': checkDepName, 'trigger': 'blur' }],
+              rank: [{ 'required': true, validator: (rule, value,callback) => checkRank(rule, value, this.userInfo.jobRank,callback), 'trigger': 'blur' }],
+            }
+          }
+        },
+        created() {
+          this.options =[
+            {
+              value: 'EMPLOYEE_',
+              label: '员工',
+              children: JSON.parse(JSON.stringify(this.common_permissions)) // 必须这样做，才能创建新对象，不然直接使用this.common_permissions 就是浅拷贝
+            },
+            {
+              value: 'DEPARTMENT_',
+              label: '部门',
+              children: JSON.parse(JSON.stringify(this.common_permissions))
+            },
+            {
+              value: 'JOBTITLE_',
+              label: '职位',
+              children: JSON.parse(JSON.stringify(this.common_permissions))
+            }
+          ];
+
+          // 用户已有的权限
+          this.userInfo = JSON.parse(localStorage.getItem('userInfo'))
+          this.id = requestUrlParam('id')
+          this.actionType = this.id ? 'edit' : 'add'
+          if (this.id) {
+            this.init()
+          }else{
+            temp= localStorage.getItem("jobTitleRuleForm")
+            temp2 = localStorage.getItem("selectedOptions")
+            if(temp!=null) {
+              this.ruleForm = JSON.parse(temp);
+              this.selectedOptions = JSON.parse(temp2);
+            }
+          }
+          // 使用 this.$nextTick(() => {  可以立即渲染，否则要点击后才能渲染。
+          // this.$nextTick 方法用于在下次 DOM 更新循环结束之后执行回调函数。
+
+          // 注意重点，我们设置disabled的时候，一定要用Vue.$set去设置，不可以直接赋值，不然DOM是没有响应的。
+          this.userHasPermissions = String2Permission(this.userInfo.permissions);
+          this.limitPermissions(this.options, this.userHasPermissions);
+        },
+        mounted() {
+
+
+
+        },
+        methods: {
+          limitPermissions(options, userHas){
+            for (let i=0;i<options.length;i++){
+              let item = options[i];
+              let prefix = item.value;
+              for(let j =0;j<item.children.length;j++){
+                let pem = item.children[j].value;
+                // 没有该权限，设置 disable 为 true
+                if(!this.checkIfHasPermission(prefix,pem,userHas)){
+                  this.$set(options[i].children[j], 'disabled', true)
+                  // options[i].children[j].disabled = true;
+                }else{
+                  // 有权限
+                  this.$set(options[i].children[j], 'disabled', false)
+                  // options[i].children[j].disabled = false;
+                }
+              }
+            }
+      },
+
+      checkIfHasPermission(prefix,pem, userHas){
+        // "EMPLOYEE__READ"        ARRAY[12][2]
+        for(let f1 of userHas){
+          if (prefix === f1[0] && pem===f1[1]) return true;
+        }
+        return false;
+      },
+
+
+
+
+
+          handleSelectionChange(value) {
+            console.log('已选择的值：', value);
+            this.selectedOptions;
+          },
+
+          async init () {
+            queryJobTitleById(this.id).then(res => {
+              console.log(res)
+              if (String(res.code) === '1') {
+                console.log(res.data)
+                this.ruleForm = res.data
+                this.selectedOptions = String2Permission(res.data.permissions)
+
+              } else {
+                this.$message.error(res.msg || '操作失败')
+              }
+            })
+          },
+          submitForm (formName, st) {
+            this.$refs[formName].validate((valid) => {
+              if (valid) {
+                // 只保存
+                if (!st){
+                  localStorage.setItem("jobTitleRuleForm",JSON.stringify(this.ruleForm))
+                  localStorage.setItem("selectedOptions",JSON.stringify(this.selectedOptions))
+                }else{
+                  // 提交
+                  const params = {
+                    ...this.ruleForm,
+                    'id': this.id,
+                    'permissions': permission2String(this.selectedOptions)
+                  }
+                  localStorage.removeItem("jobTitleRuleForm");
+                  localStorage.removeItem("selectedOptions");
+                  addJobTitle(params).then(res => {
+                    var retMsg;
+                    if (res.code === 1) {
+                      retMsg = this.id ? '职位信息修改成功！':'职位添加成功！'
+                      this.$message.success(retMsg);
+
+                      setTimeout(() => {
+                        this.goBack();
+                      }, 2000);
+
+                    } else {
+                      this.$message.error(res.msg || '操作失败')
+                    }
+                  }).catch(err => {
+                    this.$message.error('请求出错了：' + err)
+                  })
+                }
+
+              } else {
+                console.log('error submit!!')
+                return false
+              }
+            })
+          },
+          goBack(){
+            window.parent.menuHandle({
+              id: '3',
+              url: './jobTitle/list.html',
+              name: '部门管理'
+            },false)
+          }
+        }
+      })
+    </script>
+</body>
+</html>

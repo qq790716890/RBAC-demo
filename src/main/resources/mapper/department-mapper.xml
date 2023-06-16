@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rbac_demo.dao.DepartmentMapper">
+
+
+    <sql id="selectFields">
+        id, name, rank, description,create_time, create_user_id,update_time,update_user_id
+    </sql>
+    <sql id="insertFields">
+        name, rank, description,create_time, create_user_id,update_time,update_user_id
+    </sql>
+
+    <!-- keyProperty="id"   会在插入后，主动把自增主键即id的值，回写至 Employee 中 -->
+    <insert id="insertOne" parameterType="Department" keyProperty="id">
+        INSERT into department (<include refid="insertFields"></include>)
+        values(#{name},#{rank},#{description}, #{createTime}, #{createUserId}, #{updateTime}, #{updateUserId})
+    </insert>
+
+
+    <update id="updateOne" parameterType="Department">
+        UPDATE department
+        SET name = #{name}, rank = #{rank}, description = #{description},
+            create_time = #{createTime}, create_user_id = #{createUserId},
+            update_time = #{updateTime}, update_user_id = #{updateUserId}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteOneById">
+        DELETE FROM department
+        WHERE id = #{id};
+    </delete>
+
+
+    <select id="findDepartmentById" resultType="Department">
+        select <include refid="selectFields"> </include>
+        from department
+        where id = #{id}
+    </select>
+
+    <select id="selectByPage" resultType="Department">
+        select <include refid="selectFields"></include>
+        from department
+        <if test="name!=null">
+        where name like #{name}
+        </if>
+        order by create_time desc
+        limit #{limit} offset #{offset}
+    </select>
+
+
+    <select id="selectOneById" resultType="Department">
+        select <include refid="selectFields"></include>
+        from department
+        where id = #{id}
+    </select>
+
+    <select id="selectOneByName" resultType="Department">
+        select <include refid="selectFields"></include>
+        from department
+        where name = #{name}
+    </select>
+
+    <select id="selectLimitById" resultType="Department">
+        select d2.id, d2.name, d2.rank, d2.description,d2.create_time, d2.create_user_id,d2.update_time,d2.update_user_id
+        from department d1, department d2
+        where d1.id = #{id} and (d1.rank &lt; d2.rank or d1.name = d2.name)
+    </select>
+
+    <select id="selectAllCount" resultType="Integer">
+        select count(1)
+        from department
+        <if test="name!=null">
+            where name like #{name}
+        </if>
+        order by create_time desc, update_time desc
+    </select>
+
+
+</mapper>
