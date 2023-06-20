@@ -59,8 +59,8 @@ function checkUserName (rule, value, callback){
 function checkName (rule, value, callback){
   if (value === "") {
     callback(new Error("请输入姓名"))
-  } else if (value.length > 8) {
-    callback(new Error("账号长度应是2-8"))
+  } else if (value.length > 20) {
+    callback(new Error("账号长度最大为20"))
   } else {
     callback()
   }

@@ -6,7 +6,7 @@ import com.rbac_demo.common.ConstantUtils;
 import com.rbac_demo.common.Page;
 import com.rbac_demo.common.R;
 import com.rbac_demo.entity.Employee;
-import com.rbac_demo.entity.JobTitle;
+
 import com.rbac_demo.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
