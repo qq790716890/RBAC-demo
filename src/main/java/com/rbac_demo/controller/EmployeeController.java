@@ -51,7 +51,7 @@ public class EmployeeController implements ConstantUtils {
 
     @RequiresPermissions(value = {EMP_READ},rankCheck = true)
     @GetMapping("/query/{id}")
-        public R<Employee> queryOne(@PathVariable("id")  int id){
+    public R<Employee> queryOne(@PathVariable("id")  int id){
         Employee employee = employeeService.selectOneById(id);
         if (employee == null) return R.error("用户不存在！");
         employeeService.fillEmpInfo(employee);
