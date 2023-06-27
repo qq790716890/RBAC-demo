@@ -34,6 +34,7 @@ public class EmployeeController implements ConstantUtils {
     @RequiresPermissions(value = {EMP_READ})
     @PostMapping("/list")
     public R<Page> list(@RequestBody Page page){
+        if (page.getPageSize() == null || page.getCurrentPage()==null ) throw new IllegalArgumentException();
         List<Employee> employees = employeeService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());
 
         List<Employee> updatedEmployees = employees.stream()
@@ -51,7 +52,7 @@ public class EmployeeController implements ConstantUtils {
 
     @RequiresPermissions(value = {EMP_READ},rankCheck = true)
     @GetMapping("/query/{id}")
-    public R<Employee> queryOne(@PathVariable("id")  int id){
+    public R<Employee> queryOne(@PathVariable("id")  Long id){
         Employee employee = employeeService.selectOneById(id);
         if (employee == null) return R.error("用户不存在！");
         employeeService.fillEmpInfo(employee);
@@ -62,6 +63,13 @@ public class EmployeeController implements ConstantUtils {
     @PostMapping("/add")
     public R<String> add(@RequestBody Employee employee){
         // 根据是否存在id，来判断是插入还是更新
+
+        // 置空，防止用户给定
+        employee.setCreateTime(null);
+        employee.setCreateUserId(null);
+        employee.setUpdateUserId(null);
+        if (employee.getId() == null) employee.setUpdateTime(null); // 更新操作的话，不需要设置为空，会查数据库校验
+
         if (employee.getId() == null){
             int ret = employeeService.insertOne(employee);
             if (ret!=0){

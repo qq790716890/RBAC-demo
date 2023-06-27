@@ -87,7 +87,7 @@ public class PermissionCheckAspect {
         //  2.获取到到方法中的第一个参数
         Object[] args = joinPoint.getArgs();
         if (annotation.rankCheck()) {
-            if (!rankCheck(loginEmp, args[0], controllerClass)){
+            if (!rankCheck(loginEmp, args[0], controllerClass)) {
                 // 没有权限.
                 log.debug("登录用户: [" + loginEmp.getUserName() + "] 没有访问权限！");
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -113,13 +113,14 @@ public class PermissionCheckAspect {
             JobTitle jobTitle = (JobTitle) toCheck;
             return PermissionUtils.checkJobTitleRank(employee.getJobRank(), jobTitle.getRank());
 
-        } else if (toCheck instanceof Integer) {
+        } else if (toCheck instanceof Long || toCheck instanceof Integer) {
             // 根据controller方法，查询id对象，比较它们的rank
-            int id = (Integer) toCheck;
+            long id = toCheck instanceof Long?(Long) toCheck:(long) (Integer) toCheck;;
+
             if (clazz != null) {
                 if (DepartmentController.class.isAssignableFrom(clazz)) {
                     // DepartmentController 下的 id 参数
-                    Department department = departmentService.selectOneById(id);
+                    Department department = departmentService.selectOneById((int) id);
                     return PermissionUtils.checkDepartmentRank(employee, department);
 
                 } else if (EmployeeController.class.isAssignableFrom(clazz)) {
@@ -132,17 +133,15 @@ public class PermissionCheckAspect {
                 } else if (JobTitleController.class.isAssignableFrom(clazz)) {
                     // clazz不是 JobTitleController 类或其子类
                     // JobTitleController 下的 id 参数
-                    JobTitle jobTitle = jobTitleService.selectOneById(id);
+                    JobTitle jobTitle = jobTitleService.selectOneById((int) id);
                     return PermissionUtils.checkJobTitleRank(employee.getJobRank(), jobTitle.getRank());
-                }else {
+                } else {
                     throw new IllegalArgumentException();
                 }
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException();
             }
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("要比对rank的对象不合法！！！");
         }
     }

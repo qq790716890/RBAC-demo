@@ -34,7 +34,7 @@ public class PermissionTest {
     @Test
     public void testPerm(){
 
-        Employee loginEmp = employeeService.selectOneById(1);
+        Employee loginEmp = employeeService.selectOneById(1L);
         employeeService.fillEmpInfo(loginEmp);
         boolean ret = permissionCheckAspect.rankCheck(loginEmp, 6,EmployeeController.class);
         Assert.assertTrue(ret);

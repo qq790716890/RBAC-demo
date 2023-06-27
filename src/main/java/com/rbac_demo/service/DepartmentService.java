@@ -48,7 +48,7 @@ public class DepartmentService {
     }
 
     public int deleteOneById(int id) {
-        return departmentMapper.deleteOneById(id);
+        return departmentMapper.updateOneByDel(id);
     }
 
     public List<Department> selectLimitById(int id) {
@@ -56,6 +56,6 @@ public class DepartmentService {
     }
 
     public int selectAllCount(String name) {
-        return departmentMapper.selectAllCount(name);
+        return departmentMapper.selectAllCount("%"+name+"%");
     }
 }

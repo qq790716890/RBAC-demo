@@ -14,7 +14,6 @@ import java.util.List;
 @Mapper
 public interface EmployeeMapper {
 
-    Employee findEmployeeById(int id);
 
     Employee findEmployeeByUserName(String userName);
 
@@ -22,13 +21,13 @@ public interface EmployeeMapper {
 
     List<Employee> selectByPage(int limit, int offset,String name);
 
-    Employee selectOneById(int id);
+    Employee selectOneById(Long id);
 
     int updateOne(Employee employee);
 
     int updateOneStatus(int id, int status);
 
-    int deleteOneById(int id);
+    int updateOneByDel(int id);
 
     int selectCountByDepId(int id);
 

@@ -45,6 +45,13 @@ public class DepartmentController implements ConstantUtils {
     @PostMapping("/add")
     public R<String> add(@RequestBody Department department){
         // 根据是否存在id，来判断是插入还是更新
+
+        // 置空，防止用户给定
+        department.setCreateTime(null);
+        department.setCreateUserId(null);
+        department.setUpdateUserId(null);
+        if (department.getId() == null) department.setUpdateTime(null); // 更新操作的话，不需要设置为空，会查数据库校验
+
         if (department.getId() == null){
             // 部门名字不能冲突，必须唯一
             Department department1 = departmentService.selectOneByName(department.getName());

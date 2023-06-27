@@ -46,10 +46,10 @@ public class EmployeeTest {
 
     @Test
     public void findByIdOrUserName(){
-        Employee emp = employeeMapper.findEmployeeById(1);
+        Employee emp = employeeMapper.selectOneById(1L);
         Assert.assertNotNull(emp);
 
-        emp = employeeMapper.findEmployeeById(2);
+        emp = employeeMapper.selectOneById(2L);
         Assert.assertNull(emp);
 
         emp = employeeMapper.findEmployeeByUserName("admin");

@@ -52,10 +52,10 @@ public class EmployeeService {
     }
 
     public int selectAllCount(String name){
-        return employeeMapper.selectAllCount(name);
+        return employeeMapper.selectAllCount("%"+name+"%");
     }
 
-    public Employee selectOneById(int id){
+    public Employee selectOneById(Long id){
         return employeeMapper.selectOneById(id);
     }
 
@@ -72,7 +72,7 @@ public class EmployeeService {
     }
 
     public int deleteOneById(int id) {
-        return employeeMapper.deleteOneById(id);
+        return employeeMapper.updateOneByDel(id);
     }
 
     public int selectCountByDepId(int id) {

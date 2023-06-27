@@ -29,7 +29,7 @@ public interface JobTitleMapper {
 
     int updateOne(JobTitle jobTitle);
 
-    int deleteOneById(int id);
+    int updateOneByDel(int id);
 
     List<JobTitle> selectLimitById(int id);
 

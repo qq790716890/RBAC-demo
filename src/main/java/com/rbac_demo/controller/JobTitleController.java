@@ -51,6 +51,13 @@ public class JobTitleController implements ConstantUtils {
     @PostMapping("/add")
     public R<String> add(@RequestBody JobTitle jobTitle){
         // 根据是否存在id，来判断是插入还是更新
+
+        // 置空，防止用户给定
+        jobTitle.setCreateTime(null);
+        jobTitle.setCreateUserId(null);
+        jobTitle.setUpdateUserId(null);
+        if (jobTitle.getId() == null) jobTitle.setUpdateTime(null); // 更新操作的话，不需要设置为空，会查数据库校验
+
         if (jobTitle.getId() == null){
             // 部门名字不能冲突，必须唯一
             JobTitle jobTitle1 = jobTitleService.selectOneByName(jobTitle.getName());

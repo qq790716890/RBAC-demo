@@ -26,7 +26,7 @@ public interface DepartmentMapper {
 
     Department selectOneByName(String name);
 
-    int deleteOneById(int id);
+    int updateOneByDel(int id);
 
     List<Department> selectLimitById(int id);
 

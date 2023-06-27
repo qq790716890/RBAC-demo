@@ -4,9 +4,6 @@
 
 <mapper namespace="com.rbac_demo.dao.EmployeeMapper">
 
-
-
-
     <sql id="selectFields">
         id, user_name, password, name, status,department_id, job_title_id, create_time, create_user_id,update_time,update_user_id
     </sql>
@@ -22,12 +19,21 @@
 
     <update id="updateOne" parameterType="Employee">
         UPDATE employee
-        SET user_name = #{userName}, password = #{password},
-            name=#{name}, status=#{status},department_id=#{departmentId},
-            job_title_id = #{jobTitleId},
-            create_time=#{createTime}, create_user_id=#{createUserId},
-            update_time=#{updateTime},update_user_id=#{updateUserId}
-        WHERE id = #{id}
+        <set>
+            <trim suffixOverrides=",">
+                <if test="userName != null">user_name = #{userName},</if>
+                <if test="password != null">password = #{password},</if>
+                <if test="name != null">name = #{name},</if>
+                <if test="status != null">status = #{status},</if>
+                <if test="departmentId != null">department_id = #{departmentId},</if>
+                <if test="jobTitleId != null">job_title_id = #{jobTitleId},</if>
+                <if test="createTime != null">create_time = #{createTime},</if>
+                <if test="createUserId != null">create_user_id = #{createUserId},</if>
+                <if test="updateTime != null">update_time = #{updateTime},</if>
+                <if test="updateUserId != null">update_user_id = #{updateUserId},</if>
+            </trim>
+        </set>
+        WHERE id = #{id} and is_deleted = 0
     </update>
 
     <update id="updateOneStatus">
@@ -37,17 +43,18 @@
     </update>
 
 
-    <delete id="deleteOneById">
-        DELETE FROM employee
+    <update id="updateOneByDel">
+        UPDATE employee
+        SET is_deleted = 1
         where id = #{id}
-
-    </delete>
+    </update>
 
 
     <select id="findEmployeeById" resultType="Employee">
         select <include refid="selectFields"> </include>
         from employee
         where id = #{id}
+        AND is_deleted = 0
     </select>
 
 
@@ -55,14 +62,16 @@
         select <include refid="selectFields"> </include>
         from employee
         where user_name = #{userName}
+        AND is_deleted = 0
     </select>
 
 
     <select id="selectByPage" resultType="Employee">
         select <include refid="selectFields"></include>
         from employee
+        where is_deleted = 0
         <if test="name!=null">
-        where name like #{name}
+        and name like #{name}
         </if>
         order by create_time desc
         limit #{limit} offset #{offset}
@@ -79,19 +88,22 @@
         select count(1)
         from employee
         where department_id = #{id}
+        and is_deleted = 0
     </select>
 
     <select id="selectCountByJobId" resultType="Integer">
         select count(1)
         from employee
         where job_title_id = #{id}
+        and is_deleted = 0
     </select>
 
     <select id="selectAllCount" resultType="Integer">
         select count(1)
         from employee
+        where is_deleted = 0
         <if test="name!=null">
-            where name like #{name}
+            and name like #{name}
         </if>
         order by create_time desc, update_time desc
     </select>
