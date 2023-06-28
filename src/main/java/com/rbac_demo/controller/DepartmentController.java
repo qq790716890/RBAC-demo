@@ -34,6 +34,8 @@ public class DepartmentController implements ConstantUtils {
     @RequiresPermissions(DEP_READ)
     @PostMapping("/list")
     public R<Page> list(@RequestBody Page page){
+        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) throw new IllegalArgumentException();
+
         List<Department> departments = departmentService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());
         int rows = departmentService.selectAllCount(page.getName());
         page.setRows(rows);
@@ -44,7 +46,8 @@ public class DepartmentController implements ConstantUtils {
     @RequiresPermissions(value = {DEP_INSERT,DEP_UPDATE}, logical = Logical.OR,rankCheck = true)
     @PostMapping("/add")
     public R<String> add(@RequestBody Department department){
-        // 根据是否存在id，来判断是插入还是更新
+        if (department == null) throw new IllegalArgumentException("传参为空！");
+
 
         // 置空，防止用户给定
         department.setCreateTime(null);
@@ -52,6 +55,7 @@ public class DepartmentController implements ConstantUtils {
         department.setUpdateUserId(null);
         if (department.getId() == null) department.setUpdateTime(null); // 更新操作的话，不需要设置为空，会查数据库校验
 
+        // 根据是否存在id，来判断是插入还是更新
         if (department.getId() == null){
             // 部门名字不能冲突，必须唯一
             Department department1 = departmentService.selectOneByName(department.getName());

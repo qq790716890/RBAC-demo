@@ -21,21 +21,21 @@ import java.sql.SQLIntegrityConstraintViolationException;
 @Slf4j
 public class customExceptionAdvice {
 
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<R<String>> handleException(Exception ex) {
-        log.error("[发生错误]： " + ex.getMessage());
-        return new ResponseEntity<>(R.error(ex.getMessage()), HttpStatus.OK);
-    }
-
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public R<String> exceptionHandler(SQLIntegrityConstraintViolationException ex){
+    public ResponseEntity<R<String>> exceptionHandler(SQLIntegrityConstraintViolationException ex){
         log.error(ex.getMessage());
         if(ex.getMessage().contains("Duplicate entry")){
             String[] split = ex.getMessage().split(" ");
             String msg = split[2]+"已存在";
-            return R.error(msg);
+            return new ResponseEntity<>(R.error(ex.getMessage()), HttpStatus.OK);
         }
-        return R.error("未知错误");
+        return new ResponseEntity<>(R.error("未知错误"),HttpStatus.OK);
+    }
+
+    @ExceptionHandler()
+    public ResponseEntity<R<String>> handleException(Exception ex) {
+        log.error("[发生错误]： " + ex.getMessage());
+        return new ResponseEntity<>(R.error(ex.getMessage()), HttpStatus.OK);
     }
 
 }

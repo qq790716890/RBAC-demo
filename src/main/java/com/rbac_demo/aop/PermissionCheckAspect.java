@@ -102,15 +102,29 @@ public class PermissionCheckAspect {
         // 根据参数对象，判断需要比对的 rank
         if (toCheck instanceof Employee) {
             Employee employee1 = (Employee) toCheck;
+
+            // 参数校验
+            if (employee1.getId() == null || employee1.getDepartmentId()==null || employee1.getJobTitleId()==null)
+                throw new IllegalArgumentException("请求参数不正确！");
+
             employeeService.fillEmpInfo(employee1);
             return PermissionUtils.checkEmpRank(employee, employee1);
 
         } else if (toCheck instanceof Department) {
             Department dep = (Department) toCheck;
+            // 参数校验
+            if (dep.getId() == null || dep.getRank() == null)
+                throw new IllegalArgumentException("请求参数不正确！");
+
             return PermissionUtils.checkDepartmentRank(employee, dep);
 
         } else if (toCheck instanceof JobTitle) {
             JobTitle jobTitle = (JobTitle) toCheck;
+
+            // 参数校验
+            if ( jobTitle.getRank() == null)
+                throw new IllegalArgumentException("请求参数不正确！");
+
             return PermissionUtils.checkJobTitleRank(employee.getJobRank(), jobTitle.getRank());
 
         } else if (toCheck instanceof Long || toCheck instanceof Integer) {

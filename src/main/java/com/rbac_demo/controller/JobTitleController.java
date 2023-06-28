@@ -39,6 +39,8 @@ public class JobTitleController implements ConstantUtils {
     @RequiresPermissions(value = {JOBTITLE_READ})
     @PostMapping("/list")
     public R<Page> list(@RequestBody Page page){
+        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) throw new IllegalArgumentException();
+
         List<JobTitle> jobTitles = jobTitleService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());
         int rows = jobTitleService.selectAllCount(page.getName());
         page.setRows(rows);
@@ -50,14 +52,16 @@ public class JobTitleController implements ConstantUtils {
     @RequiresPermissions(value = {JOBTITLE_UPDATE,JOBTITLE_INSERT},rankCheck = true,logical = Logical.OR)
     @PostMapping("/add")
     public R<String> add(@RequestBody JobTitle jobTitle){
-        // 根据是否存在id，来判断是插入还是更新
+        if (jobTitle == null) throw new IllegalArgumentException("请求参数为空！");
 
         // 置空，防止用户给定
         jobTitle.setCreateTime(null);
         jobTitle.setCreateUserId(null);
         jobTitle.setUpdateUserId(null);
-        if (jobTitle.getId() == null) jobTitle.setUpdateTime(null); // 更新操作的话，不需要设置为空，会查数据库校验
 
+
+        if (jobTitle.getId() == null) jobTitle.setUpdateTime(null); // 更新操作的话，不需要设置为空，会查数据库校验
+        // 根据是否存在id，来判断是插入还是更新
         if (jobTitle.getId() == null){
             // 部门名字不能冲突，必须唯一
             JobTitle jobTitle1 = jobTitleService.selectOneByName(jobTitle.getName());
