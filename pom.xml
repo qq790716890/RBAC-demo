@@ -25,14 +25,29 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!--
-            1. entity 的 set get方法省略
-            2. sl4j 日志
-        -->
+
+<!--        &lt;!&ndash;-->
+<!--            1. entity 的 set get方法省略-->
+<!--            2. sl4j 日志-->
+<!--        &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.projectlombok</groupId>-->
+<!--            <artifactId>lombok</artifactId>-->
+<!--        </dependency>-->
+
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+<!--            <version>1.7.32</version>-->
         </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+<!--            <version>1.2.6</version>-->
+        </dependency>
+
+
 
         <!-- 添加 AOP 相关依赖 -->
         <dependency>

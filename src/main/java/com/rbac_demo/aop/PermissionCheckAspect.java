@@ -6,7 +6,7 @@ import com.rbac_demo.annotation.RequiresPermissions;
 import com.rbac_demo.common.EmployeeContext;
 import com.rbac_demo.common.PermissionUtils;
 
-import com.rbac_demo.common.R;
+import com.rbac_demo.entity.R;
 import com.rbac_demo.controller.DepartmentController;
 import com.rbac_demo.controller.EmployeeController;
 import com.rbac_demo.controller.JobTitleController;
@@ -16,7 +16,6 @@ import com.rbac_demo.entity.JobTitle;
 import com.rbac_demo.service.DepartmentService;
 import com.rbac_demo.service.EmployeeService;
 import com.rbac_demo.service.JobTitleService;
-import lombok.extern.slf4j.Slf4j;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -24,6 +23,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,6 @@ import java.util.Arrays;
 
 @Component
 @Aspect
-@Slf4j
 public class PermissionCheckAspect {
 
     @Autowired
@@ -53,6 +53,9 @@ public class PermissionCheckAspect {
 
     @Autowired
     private DepartmentService departmentService;
+
+    private static final Logger log = LoggerFactory.getLogger(PermissionCheckAspect.class);
+
 
 
     @Around("@annotation(com.rbac_demo.annotation.RequiresPermissions)")

@@ -1,10 +1,12 @@
 package com.rbac_demo.common;
 
 import com.rbac_demo.annotation.Logical;
+import com.rbac_demo.aop.PermissionCheckAspect;
 import com.rbac_demo.entity.Department;
 import com.rbac_demo.entity.Employee;
 import com.rbac_demo.entity.JobTitle;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
@@ -13,8 +15,9 @@ import java.util.Objects;
  * @date : 2023/6/12
  * @effect :
  */
-@Slf4j
 public class PermissionUtils implements ConstantUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(PermissionUtils.class);
 
     public static String getAllJobTitlePermissions() {
         String[] ls = new String[]{JOBTITLE_READ, JOBTITLE_UPDATE, JOBTITLE_INSERT, JOBTITLE_DELETE};

@@ -1,8 +1,10 @@
 package com.rbac_demo.filter;
 
 import com.rbac_demo.common.EmployeeContext;
-import com.rbac_demo.common.R;
-import lombok.extern.slf4j.Slf4j;
+import com.rbac_demo.controller.LoginController;
+import com.rbac_demo.entity.R;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.AntPathMatcher;
 import com.alibaba.fastjson.JSON;
@@ -19,12 +21,13 @@ import java.io.IOException;
  */
 
 @WebFilter(filterName = "logInFilter",urlPatterns = "/*")
-@Slf4j
 @Order(1)
 public class loginFilter implements Filter {
 
     //路径匹配器，支持通配符
     public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
+
+    private static final Logger log = LoggerFactory.getLogger(loginFilter.class);
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

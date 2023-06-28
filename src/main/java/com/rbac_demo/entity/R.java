@@ -1,6 +1,5 @@
-package com.rbac_demo.common;
+package com.rbac_demo.entity;
 
-import lombok.Data;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -12,7 +11,6 @@ import java.util.Map;
  * @effect : 返回给前端的统一对象格式
  */
 
-@Data
 public class R<T> implements Serializable {
     private Integer code; // 编码: 1成功 ；0和其他数字为失败
 
@@ -40,5 +38,39 @@ public class R<T> implements Serializable {
     public R<T> add(String key, Object val){
         this.map.put(key,val);
         return this;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    @Override
+    public String toString() {
+        return "R{" +
+                "code=" + code +
+                ", msg='" + msg + '\'' +
+                ", data=" + data +
+                ", map=" + map +
+                '}';
     }
 }

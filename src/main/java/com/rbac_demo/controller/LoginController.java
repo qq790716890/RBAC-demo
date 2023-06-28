@@ -2,11 +2,12 @@ package com.rbac_demo.controller;
 
 
 import com.rbac_demo.common.EmployeeContext;
-import com.rbac_demo.common.R;
+import com.rbac_demo.entity.R;
 
 import com.rbac_demo.entity.Employee;
 import com.rbac_demo.service.EmployeeService;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +22,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
-@Slf4j
 public class LoginController {
 
     @Autowired
     private EmployeeService employeeService;
 
-
+    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
     @PostMapping("/login")
     public R<Employee> login(@RequestBody Employee emp){

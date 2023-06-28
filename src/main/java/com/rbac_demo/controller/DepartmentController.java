@@ -4,11 +4,13 @@ import com.rbac_demo.annotation.Logical;
 import com.rbac_demo.annotation.RequiresPermissions;
 import com.rbac_demo.common.ConstantUtils;
 import com.rbac_demo.common.Page;
-import com.rbac_demo.common.R;
+import com.rbac_demo.controller.advice.customExceptionAdvice;
+import com.rbac_demo.entity.R;
 import com.rbac_demo.entity.Department;
 import com.rbac_demo.service.DepartmentService;
 import com.rbac_demo.service.EmployeeService;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +24,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/department")
-@Slf4j
 public class DepartmentController implements ConstantUtils {
 
     @Autowired
@@ -30,6 +31,8 @@ public class DepartmentController implements ConstantUtils {
 
     @Autowired
     private EmployeeService employeeService;
+
+    private static final Logger log = LoggerFactory.getLogger(DepartmentController.class);
 
     @RequiresPermissions(DEP_READ)
     @PostMapping("/list")

@@ -1,6 +1,6 @@
 package com.rbac_demo.common;
 
-import lombok.Data;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,6 @@ import java.util.List;
  * @effect : 分页对象
  */
 
-@Data
 public class Page<T> {
     //  发送的  post 请求：   currentPage: 1, pageSize: 10
 
@@ -36,5 +35,56 @@ public class Page<T> {
     public int getOffset(){
         // current * limit - limit
         return (currentPage-1) * pageSize;
+    }
+
+    public Integer getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(Integer currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getRows() {
+        return rows;
+    }
+
+    public void setRows(Integer rows) {
+        this.rows = rows;
+    }
+
+    public List<T> getRecords() {
+        return records;
+    }
+
+    public void setRecords(List<T> records) {
+        this.records = records;
+    }
+
+    @Override
+    public String toString() {
+        return "Page{" +
+                "currentPage=" + currentPage +
+                ", pageSize=" + pageSize +
+                ", name='" + name + '\'' +
+                ", rows=" + rows +
+                ", records=" + records +
+                '}';
     }
 }

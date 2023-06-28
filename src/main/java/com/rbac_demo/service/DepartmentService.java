@@ -1,13 +1,7 @@
 package com.rbac_demo.service;
 
-import com.rbac_demo.common.PermissionUtils;
-import com.rbac_demo.common.R;
 import com.rbac_demo.dao.DepartmentMapper;
-import com.rbac_demo.dao.EmployeeMapper;
-import com.rbac_demo.dao.JobTitleMapper;
 import com.rbac_demo.entity.Department;
-import com.rbac_demo.entity.Employee;
-import com.rbac_demo.entity.JobTitle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
