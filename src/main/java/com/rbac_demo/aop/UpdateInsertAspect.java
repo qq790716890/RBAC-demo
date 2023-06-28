@@ -69,7 +69,7 @@ public class UpdateInsertAspect {
         } else if (obj instanceof JobTitle) {
             JobTitle jobTitle = (JobTitle) obj;
 
-            Date preDate = departmentService.selectOneById(jobTitle.getId()).getUpdateTime();
+            Date preDate = jobTitleService.selectOneById(jobTitle.getId()).getUpdateTime();
             // 更新的期间，已经被人修改了。
             if (preDate !=null && !preDate.equals(jobTitle.getUpdateTime())){
                 throw new CustomException("当前内容已经被更新，请您刷新后重试！");
