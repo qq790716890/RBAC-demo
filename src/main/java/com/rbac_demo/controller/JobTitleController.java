@@ -38,7 +38,7 @@ public class JobTitleController implements ConstantUtils {
     @RequiresPermissions(value = {JOBTITLE_READ})
     @PostMapping("/list")
     public R<Page> list(@RequestBody Page page){
-        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) throw new IllegalArgumentException();
+        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) return R.error("请求参数不合法！");
 
         List<JobTitle> jobTitles = jobTitleService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());
         int rows = jobTitleService.selectAllCount(page.getName());

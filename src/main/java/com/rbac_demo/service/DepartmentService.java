@@ -50,6 +50,6 @@ public class DepartmentService {
     }
 
     public int selectAllCount(String name) {
-        return departmentMapper.selectAllCount("%"+name+"%");
+        return departmentMapper.selectAllCount(name==null?null:"%"+name+"%");
     }
 }

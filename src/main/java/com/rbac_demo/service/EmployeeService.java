@@ -2,6 +2,7 @@ package com.rbac_demo.service;
 
 import com.rbac_demo.common.Page;
 import com.rbac_demo.common.PermissionUtils;
+import com.rbac_demo.common.RSAUtils;
 import com.rbac_demo.dao.DepartmentMapper;
 import com.rbac_demo.dao.EmployeeMapper;
 import com.rbac_demo.dao.JobTitleMapper;
@@ -11,6 +12,7 @@ import com.rbac_demo.entity.JobTitle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.PrivateKey;
 import java.util.List;
 
 /**
@@ -36,6 +38,11 @@ public class EmployeeService {
         return employeeMapper.findEmployeeByUserName(userName);
     }
 
+    public boolean checkRsaPassword(String rsaBase64Password, String truePassword, PrivateKey privateKey) throws Exception {
+        String decrypted = RSAUtils.decryptBase64(rsaBase64Password, privateKey);
+        return truePassword.equals(decrypted);
+    }
+
     public void fillEmpInfo(Employee employee){
         JobTitle jobTitle = jobTitleMapper.findJobTitleById(employee.getJobTitleId());
         Department department = departmentMapper.findDepartmentById(employee.getDepartmentId());
@@ -52,7 +59,7 @@ public class EmployeeService {
     }
 
     public int selectAllCount(String name){
-        return employeeMapper.selectAllCount("%"+name+"%");
+        return employeeMapper.selectAllCount(name==null?null:"%"+name+"%");
     }
 
     public Employee selectOneById(Long id){

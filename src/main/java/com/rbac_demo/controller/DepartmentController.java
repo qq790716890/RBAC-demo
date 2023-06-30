@@ -37,7 +37,7 @@ public class DepartmentController implements ConstantUtils {
     @RequiresPermissions(DEP_READ)
     @PostMapping("/list")
     public R<Page> list(@RequestBody Page page){
-        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) throw new IllegalArgumentException();
+        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) return R.error("请求参数不合法！");
 
         List<Department> departments = departmentService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());
         int rows = departmentService.selectAllCount(page.getName());
@@ -49,7 +49,7 @@ public class DepartmentController implements ConstantUtils {
     @RequiresPermissions(value = {DEP_INSERT,DEP_UPDATE}, logical = Logical.OR,rankCheck = true)
     @PostMapping("/add")
     public R<String> add(@RequestBody Department department){
-        if (department == null) throw new IllegalArgumentException("传参为空！");
+        if (department == null) return R.error("传参为空！");
 
 
         // 置空，防止用户给定

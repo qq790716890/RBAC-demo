@@ -63,6 +63,7 @@
 <script src="../../js/validate.js"></script>
 <script src="../../js/request.js"></script>
 <script src="../../api/login.js"></script>
+<script src="../../plugins/jsencrypt/jsencrypt.min.js" charset="utf-8"></script>
 
 <script>
     new Vue({
@@ -73,6 +74,9 @@
                     userName: 'admin',
                     password: 'admin123'
                 },
+                oldPassword: "",
+                publicKey: "",
+                publicKeyAlg: "",
                 loading: false
             }
         },
@@ -85,23 +89,52 @@
             }
         },
         created() {
+            this.init();
         },
         methods: {
+            async init () {
+                await getPublicKey().then(res => {
+                    if (String(res.code) === '1') {
+                        this.publicKeyAlg = res.algorithm
+                        this.publicKey = res.publicKey
+                    }
+                }).catch(err => {
+                    this.$message.error('请求出错了：' + err)
+                })
+            },
+
             async handleLogin() {
                 this.$refs.loginForm.validate(async (valid) => {
                     if (valid) {
                         this.loading = true
+                        // 保存旧密码
+                        this.oldPassword = this.loginForm.password
+                        // 加密 password with publicKey
+                        this.loginForm.password = this.encryptPassword(this.loginForm.password,this.publicKey,this.publicKeyAlg)
                         let res = await loginApi(this.loginForm)
                         if (String(res.code) === '1') {
                             localStorage.setItem('userInfo',JSON.stringify(res.data))
                             window.location.href= CONTEXT_PATH + '/pages/index.html'
                         } else {
+                            this.loginForm.password = this.oldPassword;
                             this.$message.error(res.msg)
                             this.loading = false
                         }
                     }
                 })
+            },
+
+            encryptPassword(password,publicKeyBase64, publicKeyAlg){
+                // RSA 利用 publicKey 对称加密
+                if (publicKeyAlg ==='RSA'){
+                    let encryptor = new JSEncrypt();
+                    encryptor.setPublicKey(publicKeyBase64);
+                    let s = encryptor.encrypt(password);
+                    return s;//默认返回Base64格式
+                }
             }
+
+
         }
     })
 </script>

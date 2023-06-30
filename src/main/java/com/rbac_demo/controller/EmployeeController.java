@@ -35,8 +35,9 @@ public class EmployeeController implements ConstantUtils {
     @RequiresPermissions(value = {EMP_READ})
     @PostMapping("/list")
     public R<Page> list(@RequestBody Page page){
-        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) throw new IllegalArgumentException();
+        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) return R.error("请求参数不合法");
         List<Employee> employees = employeeService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());
+
 
         List<Employee> updatedEmployees = employees.stream()
                 .peek(employee -> {
@@ -63,7 +64,7 @@ public class EmployeeController implements ConstantUtils {
     @RequiresPermissions(value = {EMP_INSERT,EMP_UPDATE},rankCheck = true,logical = Logical.OR)
     @PostMapping("/add")
     public R<String> add(@RequestBody Employee employee){
-        if (employee == null) throw new IllegalArgumentException("参数为空！");
+        if (employee == null) return R.error("参数不能为空！");
 
         // 置空，防止用户给定
         employee.setCreateTime(null);
@@ -89,7 +90,7 @@ public class EmployeeController implements ConstantUtils {
     @RequiresPermissions(value = {EMP_READ},rankCheck = true)
     @PutMapping("/updateStatus/{id}")
     public R<String> updateStatus(@PathVariable("id") int id, @RequestBody Map<String, Integer> map){
-        if (map == null) throw new IllegalArgumentException("输入为空！");
+        if (map == null) return R.error("输入为空！");
         int status = map.get("status");
         int ret = employeeService.updateOneStatus(id,status);
         if (ret == 1){

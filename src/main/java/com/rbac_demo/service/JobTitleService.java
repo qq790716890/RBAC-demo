@@ -52,6 +52,6 @@ public class JobTitleService {
     }
 
     public int selectAllCount(String name) {
-        return jobTitleMapper.selectAllCount("%"+name+"%");
+        return jobTitleMapper.selectAllCount(name==null?null:"%"+name+"%");
     }
 }

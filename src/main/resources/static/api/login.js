@@ -6,6 +6,13 @@ function loginApi(data) {
     })
 }
 
+function getPublicKey() {
+    return $axios({
+        'url': '/getPublicKey',
+        'method': 'get'
+    })
+}
+
 function logoutApi(data) {
     return $axios({
         'url': '/logout',
