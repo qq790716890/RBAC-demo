@@ -8,6 +8,7 @@ package com.rbac_demo.common;
 
 public interface ConstantUtils {
 
+    int DEFAULT_EXPIRE_SECONDS = 24 * 3600 * 3; // 默认3天自动过期
     String EMP_READ = "EMPLOYEE_READ";
     String EMP_UPDATE = "EMPLOYEE_UPDATE";
     String EMP_INSERT = "EMPLOYEE_INSERT";
