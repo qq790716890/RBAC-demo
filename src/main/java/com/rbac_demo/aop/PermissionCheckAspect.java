@@ -107,7 +107,7 @@ public class PermissionCheckAspect {
             Employee employee1 = (Employee) toCheck;
 
             // 参数校验
-            if (employee1.getId() == null || employee1.getDepartmentId()==null || employee1.getJobTitleId()==null)
+            if (employee1.getDepartmentId()==null || employee1.getJobTitleId()==null)
                 throw new IllegalArgumentException("请求参数不正确！");
 
             employeeService.fillEmpInfo(employee1);
@@ -116,7 +116,7 @@ public class PermissionCheckAspect {
         } else if (toCheck instanceof Department) {
             Department dep = (Department) toCheck;
             // 参数校验
-            if (dep.getId() == null || dep.getRank() == null)
+            if (dep.getRank() == null)
                 throw new IllegalArgumentException("请求参数不正确！");
 
             return PermissionUtils.checkDepartmentRank(employee, dep);
