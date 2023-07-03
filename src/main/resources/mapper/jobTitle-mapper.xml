@@ -93,5 +93,12 @@
     </select>
 
 
+    <select id="selectOneByIdForUpdate" resultType="JobTitle">
+        select <include refid="selectFields"></include>
+        from job_title
+        where id = #{id}
+        for update
+    </select>
+
 
 </mapper>

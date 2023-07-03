@@ -11,6 +11,7 @@ import com.rbac_demo.entity.Employee;
 import com.rbac_demo.entity.JobTitle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.PrivateKey;
 import java.util.List;
@@ -63,6 +64,7 @@ public class EmployeeService {
         return employeeMapper.selectAllCount(name==null?null:"%"+name+"%");
     }
 
+    @Transactional
     public Employee selectOneById(Long id){
         return employeeMapper.selectOneById(id);
     }
@@ -91,4 +93,7 @@ public class EmployeeService {
         return employeeMapper.selectCountByJobId(id);
     }
 
+    public Department selectOneByIdForUpdate(Long id) {
+        return employeeMapper.selectOneByIdForUpdate(id);
+    }
 }

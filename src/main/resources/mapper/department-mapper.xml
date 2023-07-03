@@ -90,5 +90,12 @@
         order by create_time desc, update_time desc
     </select>
 
+    <select id="selectOneByIdForUpdate" resultType="Department">
+        select <include refid="selectFields"></include>
+        from department
+        where id = #{id}
+        for update
+    </select>
+
 
 </mapper>

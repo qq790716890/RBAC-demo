@@ -37,6 +37,12 @@ public class DepartmentService {
         return departmentMapper.selectOneById(id);
     }
 
+    public Department selectOneByIdForUpdate(int id) {
+        return departmentMapper.selectOneById(id);
+    }
+
+
+
     public Department selectOneByName(String name) {
         return departmentMapper.selectOneByName(name);
     }

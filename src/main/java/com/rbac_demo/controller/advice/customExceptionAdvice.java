@@ -36,10 +36,10 @@ public class customExceptionAdvice {
         return R.error("未知错误");
     }
 
-//    @ExceptionHandler()
-//    public R<String> handleException(Exception ex) {
-//        log.error("[发生错误]： " + ex.getMessage());
-//        return R.error(ex.getMessage());
-//    }
+    @ExceptionHandler(CustomException.class)
+    public R<String> handleException(Exception ex) {
+        log.error("[发生错误]： " + ex.getMessage());
+        return R.error(ex.getMessage());
+    }
 
 }

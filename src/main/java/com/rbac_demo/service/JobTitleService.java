@@ -34,6 +34,9 @@ public class JobTitleService {
     public JobTitle selectOneById(int id) {
         return jobTitleMapper.selectOneById(id);
     }
+    public JobTitle selectOneByIdForUpdate(int id) {
+        return jobTitleMapper.selectOneById(id);
+    }
 
     public int insertOne(JobTitle jobTitle) {
         return jobTitleMapper.insertOne(jobTitle);

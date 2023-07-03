@@ -1,5 +1,6 @@
 package com.rbac_demo.dao;
 
+import com.rbac_demo.entity.Department;
 import com.rbac_demo.entity.Employee;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -34,4 +35,6 @@ public interface EmployeeMapper {
     int selectCountByJobId(int id);
 
     int selectAllCount(String name);
+
+    Department selectOneByIdForUpdate(Long id);
 }
