@@ -1,10 +1,8 @@
 package com.rbac_demo.common;
 
 import com.rbac_demo.annotation.Logical;
-import com.rbac_demo.aop.PermissionCheckAspect;
 import com.rbac_demo.entity.Department;
 import com.rbac_demo.entity.Employee;
-import com.rbac_demo.entity.JobTitle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +14,9 @@ import java.util.Objects;
  * @effect :
  */
 public class PermissionUtils implements ConstantUtils {
+
+    private PermissionUtils() {
+    }
 
     private static final Logger log = LoggerFactory.getLogger(PermissionUtils.class);
 
@@ -34,7 +35,7 @@ public class PermissionUtils implements ConstantUtils {
         return String.join(",", ls);
     }
 
-    public static String[] String2Arr(String permission) {
+    public static String[] string2Arr(String permission) {
         return permission.split(",");
     }
 
@@ -42,28 +43,36 @@ public class PermissionUtils implements ConstantUtils {
     public static boolean permissionsCheck(String[] required, String[] empHas, Logical logical) {
         if (logical == Logical.AND) {
             // 有一个权限没有，就返回false
-            for (String re : required) {
-                boolean find = false;
-                for (String hs : empHas) {
-                    if (re.equals(hs)) {
-                        find = true;
-                        break;
-                    }
-                }
-                if (!find) return false;
-            }
-            return true;
+            return ifHasAll(required, empHas);
         } else {
-            // 有任何一个权限，就返回true
-            for (String re : required) {
-                for (String hs : empHas) {
-                    if (re.equals(hs)) {
-                        return true;
-                    }
+            return ifHasAny(required, empHas);
+        }
+    }
+
+    private static boolean ifHasAny(String[] required, String[] empHas) {
+        // 有任何一个权限，就返回true
+        for (String re : required) {
+            for (String hs : empHas) {
+                if (re.equals(hs)) {
+                    return true;
                 }
             }
-            return false;
         }
+        return false;
+    }
+
+    private static boolean ifHasAll(String[] required, String[] empHas) {
+        for (String re : required) {
+            boolean find = false;
+            for (String hs : empHas) {
+                if (re.equals(hs)) {
+                    find = true;
+                    break;
+                }
+            }
+            if (!find) return false;
+        }
+        return true;
     }
 
 
@@ -72,23 +81,23 @@ public class PermissionUtils implements ConstantUtils {
         // 2. 用户的 职位权限 大于或者等于 要操作的对象的职位权限
         // ********* TIP: Employee employee, Employee employee1，注意
         // ********* TIP: 数据库中没有Employee 没有 depRank 和 jobRank的信息，请务必这里查到了这两个的信息
-        if (employee.getDepRank() == null || employee.getJobRank() == null || employee1.getDepRank() == null || employee1.getJobRank() == null){
+        if (employee.getDepRank() == null || employee.getJobRank() == null || employee1.getDepRank() == null || employee1.getJobRank() == null) {
             log.warn("请确认比对的两个Employee 都注入了JOB RANK 和 DEP RANK !!!!!!");
             return false;
         }
-        return (IntComp(employee.getDepRank(), employee1.getDepRank(), CMP.LESS) || Objects.equals(employee.getDepartmentId(), employee1.getDepartmentId()) && checkJobTitleRank(employee.getJobRank(),employee1.getJobRank()));
+        return (intComp(employee.getDepRank(), employee1.getDepRank(), CMP.LESS) || Objects.equals(employee.getDepartmentId(), employee1.getDepartmentId()) && checkJobTitleRank(employee.getJobRank(), employee1.getJobRank()));
 
     }
 
     public static boolean checkJobTitleRank(int empRank, int jobRank) {
-        return IntComp(empRank,jobRank,CMP.LESS_EQ);
+        return intComp(empRank, jobRank, CMP.LESS_EQ);
     }
 
     public static boolean checkDepartmentRank(Employee employee, Department dep) {
-        return IntComp(employee.getDepRank(), dep.getRank(), CMP.LESS) || Objects.equals(employee.getDepartmentId(), dep.getId());
+        return intComp(employee.getDepRank(), dep.getRank(), CMP.LESS) || Objects.equals(employee.getDepartmentId(), dep.getId());
     }
 
-    public static boolean IntComp(int userHas, int toCheck, CMP cmpType) {
+    public static boolean intComp(int userHas, int toCheck, CMP cmpType) {
         switch (cmpType) {
             case LESS:
                 return userHas < toCheck;

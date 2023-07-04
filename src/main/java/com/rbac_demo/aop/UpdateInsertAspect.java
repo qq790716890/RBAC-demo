@@ -45,6 +45,8 @@ public class UpdateInsertAspect {
     @Autowired
     private PlatformTransactionManager transactionManager;
 
+    private static final String MSG_MODIFIED = "当前内容已经被更新，请您刷新后重试！";
+
     // 这是在 service 层面进行拦截的
 //    @Transactional   !!!!!!!!!!!!!!!!!! 在AOP中事务注解会失效，用手动的方式处理事务才可以奏效！！！！！！
     @Around("execution(* com.rbac_demo.service.*.update*(..)) && args(obj)")
@@ -52,55 +54,24 @@ public class UpdateInsertAspect {
         // 在这里进行参数修改 更新时间等
         // 这里这样写比较麻烦，还可以设置一个  UpdateTimeAware 接口，让这三个类实现这个接口设置值，
         // 然后传入的这里obj 就可以设置成 UpdateTimeAware对象，进行调用方法进行设置
-//        Long currentUserId = EmployeeContext.getEmployee().getId();
+        Long currentUserId = EmployeeContext.getEmployee().getId();
         TransactionStatus status = null;
         try {
             // 开启事务
             //
             status = transactionManager.getTransaction(new DefaultTransactionDefinition());
-            Long currentUserId = 1L;
             if (obj instanceof Employee) {
-                Employee employee = (Employee) obj;
-
-                // 查询原对象时间
-                Date preDate = employeeService.selectOneByIdForUpdate(employee.getId()).getUpdateTime();
-                // 更新的期间，已经被人修改了。
-                if (preDate != null && !preDate.equals(employee.getUpdateTime())) {
-                    throw new CustomException("当前内容已经被更新，请您刷新后重试！");
-                }
-                employee.setUpdateTime(new Date());
-                employee.setUpdateUserId(currentUserId);
+                updateEmp((Employee) obj, currentUserId);
 
             } else if (obj instanceof Department) {
-                Department department = (Department) obj;
-
-                Date preDate = departmentService.selectOneByIdForUpdate(department.getId()).getUpdateTime();
-                // 更新的期间，已经被人修改了。
-                if (preDate != null && !preDate.equals(department.getUpdateTime())) {
-                    throw new CustomException("当前内容已经被更新，请您刷新后重试！");
-                }
-
-                department.setUpdateTime(new Date());
-                department.setUpdateUserId(currentUserId);
+                updateDepartment((Department) obj, currentUserId);
 
             } else if (obj instanceof JobTitle) {
-                JobTitle jobTitle = (JobTitle) obj;
-                Date preDate = jobTitleService.selectOneByIdForUpdate(jobTitle.getId()).getUpdateTime();
-                // 更新的期间，已经被人修改了。
-                if (preDate != null && !preDate.equals(jobTitle.getUpdateTime())) {
-                    throw new CustomException("当前内容已经被更新，请您刷新后重试！");
-                }
-                jobTitle.setUpdateTime(new Date());
-                jobTitle.setUpdateUserId(currentUserId);
+                updateJobTitle((JobTitle) obj, currentUserId);
             }
             // 没问题，进行 update 操作
             Object proceed = null;
-            try {
-                proceed = pjp.proceed();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                throw new CustomException(e.getMessage());
-            }
+            proceed = pjp.proceed();
             transactionManager.commit(status);
             return proceed;
         } catch (Throwable e) {
@@ -110,6 +81,38 @@ public class UpdateInsertAspect {
             }
             throw new CustomException(e.getMessage());
         }
+    }
+
+    private void updateJobTitle(JobTitle jobTitle, Long currentUserId) {
+        Date preDate = jobTitleService.selectOneByIdForUpdate(jobTitle.getId()).getUpdateTime();
+        // 更新的期间，已经被人修改了。
+        if (preDate != null && !preDate.equals(jobTitle.getUpdateTime())) {
+            throw new CustomException(MSG_MODIFIED);
+        }
+        jobTitle.setUpdateTime(new Date());
+        jobTitle.setUpdateUserId(currentUserId);
+    }
+
+    private void updateDepartment(Department department, Long currentUserId) {
+        Date preDate = departmentService.selectOneByIdForUpdate(department.getId()).getUpdateTime();
+        // 更新的期间，已经被人修改了。
+        if (preDate != null && !preDate.equals(department.getUpdateTime())) {
+            throw new CustomException(MSG_MODIFIED);
+        }
+
+        department.setUpdateTime(new Date());
+        department.setUpdateUserId(currentUserId);
+    }
+
+    private void updateEmp(Employee employee, Long currentUserId) {
+        // 查询原对象时间
+        Date preDate = employeeService.selectOneByIdForUpdate(employee.getId()).getUpdateTime();
+        // 更新的期间，已经被人修改了。
+        if (preDate != null && !preDate.equals(employee.getUpdateTime())) {
+            throw new CustomException(MSG_MODIFIED);
+        }
+        employee.setUpdateTime(new Date());
+        employee.setUpdateUserId(currentUserId);
     }
 
     // 创建操作的AOP

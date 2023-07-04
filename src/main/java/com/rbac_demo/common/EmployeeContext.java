@@ -1,13 +1,15 @@
 package com.rbac_demo.common;
 
+
+import com.rbac_demo.controller.advice.CustomException;
 import com.rbac_demo.entity.Employee;
-import org.springframework.web.context.request.RequestAttributes;
+
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.KeyPair;
-import java.security.PrivateKey;
+
 
 /**
  * @author : lzy
@@ -16,34 +18,53 @@ import java.security.PrivateKey;
  */
 
 
-
 public class EmployeeContext {
+    public static final String KEY_PAIR = "keyPair";
+    private static final String EMP = "employee";
+    private static final String ERR = "request属性为空！";
 
-//    static HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    private EmployeeContext() {
+    }
+
     public static void setEmployee(Employee employee) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        request.getSession().setAttribute("employee", employee);
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) throw new CustomException(ERR);
+
+        HttpServletRequest request = requestAttributes.getRequest();
+        request.getSession().setAttribute(EMP, employee);
     }
 
     public static Employee getEmployee() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        return (Employee) request.getSession().getAttribute("employee");
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) throw new CustomException(ERR);
+
+        HttpServletRequest request = requestAttributes.getRequest();
+        return (Employee) request.getSession().getAttribute(EMP);
     }
 
     public static void clear() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        request.getSession().removeAttribute("employee");
-        request.getSession().removeAttribute("keyPair");
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) throw new CustomException(ERR);
+
+        HttpServletRequest request = requestAttributes.getRequest();
+        request.getSession().removeAttribute(EMP);
+        request.getSession().removeAttribute(KEY_PAIR);
     }
 
     public static void setKeyPair(KeyPair keyPair) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        request.getSession().setAttribute("keyPair", keyPair);
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) throw new CustomException(ERR);
+
+        HttpServletRequest request = requestAttributes.getRequest();
+        request.getSession().setAttribute(KEY_PAIR, keyPair);
+
     }
 
     public static KeyPair getKeyPair() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        return (KeyPair) request.getSession().getAttribute("keyPair");
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) throw new CustomException(ERR);
+        HttpServletRequest request = requestAttributes.getRequest();
+        return (KeyPair) request.getSession().getAttribute(KEY_PAIR);
     }
 
 

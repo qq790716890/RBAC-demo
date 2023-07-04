@@ -1,7 +1,6 @@
 package com.rbac_demo.dao;
 
-import com.rbac_demo.entity.Department;
-import com.rbac_demo.entity.Employee;
+
 import com.rbac_demo.entity.JobTitle;
 import org.apache.ibatis.annotations.Mapper;
 

@@ -2,8 +2,7 @@ package com.rbac_demo.filter;
 
 import com.rbac_demo.common.CookieUtil;
 import com.rbac_demo.common.EmployeeContext;
-import com.rbac_demo.controller.LoginController;
-import com.rbac_demo.dao.EmployeeMapper;
+
 import com.rbac_demo.dao.LoginTicketMapper;
 import com.rbac_demo.entity.Employee;
 import com.rbac_demo.entity.LoginTicket;
@@ -32,12 +31,12 @@ import java.util.Date;
 @Component
 @WebFilter(filterName = "logInFilter",urlPatterns = "/*")
 @Order(1)
-public class loginFilter implements Filter {
+public class LoginFilter implements Filter {
 
     //路径匹配器，支持通配符
     public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
-    private static final Logger log = LoggerFactory.getLogger(loginFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginFilter.class);
 
     @Autowired
     private LoginTicketMapper loginTicketMapper;
@@ -99,13 +98,7 @@ public class loginFilter implements Filter {
 
         }
 
-//
-//        //4-1.判断登录状态，如果已登录，则直接放行
-//        if (EmployeeContext.getEmployee() !=null){
-//            log.info("用户已登录，用户id为:{}",EmployeeContext.getEmployee().getId());
-//            filterChain.doFilter(request,response);
-//            return ;
-//        }
+
 
         //5.如果未登录则返回登录结果，通过输出流的方式向客户端页面响应数据
         log.info("用户未登录");
@@ -115,7 +108,6 @@ public class loginFilter implements Filter {
         response.setContentType("application/json");
         // 构建返回给前端的 JSON 数据，包含跳转登录页的信息
         // 将 JSON 数据写入响应输出流
-//        response.getWriter().write(loginPageResponse);
         response.getWriter().write(JSON.toJSONString(R.error("NOT LOGIN")));
     }
 

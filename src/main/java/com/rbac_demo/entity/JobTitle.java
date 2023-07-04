@@ -1,6 +1,7 @@
 package com.rbac_demo.entity;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -8,8 +9,9 @@ import java.util.Date;
  * @date : 2023/6/11
  * @effect :
  */
-public class JobTitle {
+public class JobTitle implements Serializable {
 
+    private static final long serialVersionUID = 6068470306649138632L;
     private Integer id;
 
     private String name;

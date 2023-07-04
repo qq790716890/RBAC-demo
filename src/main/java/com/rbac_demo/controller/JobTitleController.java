@@ -9,8 +9,7 @@ import com.rbac_demo.entity.JobTitle;
 import com.rbac_demo.service.EmployeeService;
 import com.rbac_demo.service.JobTitleService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,12 +31,12 @@ public class JobTitleController implements ConstantUtils {
     @Autowired
     private EmployeeService employeeService;
 
-    private static final Logger log = LoggerFactory.getLogger(JobTitleController.class);
+
 
 
     @RequiresPermissions(value = {JOBTITLE_READ})
     @PostMapping("/list")
-    public R<Page> list(@RequestBody Page page){
+    public R<Page<JobTitle>> list(@RequestBody Page<JobTitle> page){
         if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) return R.error("请求参数不合法！");
 
         List<JobTitle> jobTitles = jobTitleService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());

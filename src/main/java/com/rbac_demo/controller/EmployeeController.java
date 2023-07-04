@@ -2,21 +2,19 @@ package com.rbac_demo.controller;
 
 import com.rbac_demo.annotation.Logical;
 import com.rbac_demo.annotation.RequiresPermissions;
-import com.rbac_demo.aop.PermissionCheckAspect;
+
 import com.rbac_demo.common.ConstantUtils;
 import com.rbac_demo.common.Page;
 import com.rbac_demo.entity.R;
 import com.rbac_demo.entity.Employee;
 
 import com.rbac_demo.service.EmployeeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author : lzy
@@ -30,25 +28,24 @@ public class EmployeeController implements ConstantUtils {
 
     @Autowired
     private EmployeeService employeeService;
-    private static final Logger log = LoggerFactory.getLogger(PermissionCheckAspect.class);
+
 
     @RequiresPermissions(value = {EMP_READ})
     @PostMapping("/list")
-    public R<Page> list(@RequestBody Page page){
+    public R<Page<Employee>> list(@RequestBody Page<Employee> page){
         if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) return R.error("请求参数不合法");
         List<Employee> employees = employeeService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());
 
 
-        List<Employee> updatedEmployees = employees.stream()
-                .peek(employee -> {
+        employees.forEach(employee ->
                     // 对每个元素增加信息
                     // 假设增加信息的方法为addAdditionalInfo()
-                    employeeService.fillEmpInfo(employee);
-                })
-                .collect(Collectors.toList());
+                    employeeService.fillEmpInfo(employee)
+                );
+
         int rows = employeeService.selectAllCount(page.getName());
         page.setRows(rows);
-        page.setRecords(updatedEmployees);
+        page.setRecords(employees);
         return R.success(page);
     }
 

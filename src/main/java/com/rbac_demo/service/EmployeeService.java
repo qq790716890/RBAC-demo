@@ -1,6 +1,6 @@
 package com.rbac_demo.service;
 
-import com.rbac_demo.common.Page;
+
 import com.rbac_demo.common.PermissionUtils;
 import com.rbac_demo.common.RSAUtils;
 import com.rbac_demo.dao.DepartmentMapper;
@@ -13,9 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * @author : lzy
@@ -40,7 +45,7 @@ public class EmployeeService {
         return employeeMapper.findEmployeeByUserName(userName);
     }
 
-    public boolean checkRsaPassword(String rsaBase64Password, String truePassword, PrivateKey privateKey) throws Exception {
+    public boolean checkRsaPassword(String rsaBase64Password, String truePassword, PrivateKey privateKey) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         String decrypted = RSAUtils.decryptBase64(rsaBase64Password, privateKey);
         return truePassword.equals(decrypted);
     }
@@ -52,7 +57,7 @@ public class EmployeeService {
         employee.setJobRank(jobTitle.getRank());
         employee.setDepartmentName(department.getName());
         employee.setDepRank(department.getRank());
-        employee.setPermissions(PermissionUtils.String2Arr(jobTitle.getPermissions()));
+        employee.setPermissions(PermissionUtils.string2Arr(jobTitle.getPermissions()));
 
     }
 

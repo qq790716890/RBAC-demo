@@ -11,8 +11,7 @@ import com.rbac_demo.entity.R;
 
 import com.rbac_demo.entity.Employee;
 import com.rbac_demo.service.EmployeeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Base64;
@@ -48,7 +48,6 @@ public class LoginController {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
-    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
     @PostMapping("/login")
     public R<Employee> login(@RequestBody Employee emp, HttpServletResponse response) throws Exception {
@@ -92,7 +91,7 @@ public class LoginController {
     }
 
     @GetMapping("/getPublicKey")
-    public Map<String,Object> getPublicKey() throws Exception {
+    public Map<String,Object> getPublicKey() throws NoSuchAlgorithmException {
         KeyPair keyPair = RSAUtils.getKeyPair();
         EmployeeContext.setKeyPair(keyPair);
         Map<String,Object> map = new HashMap<>();

@@ -2,6 +2,7 @@ package com.rbac_demo.common;
 
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  * @effect : 分页对象
  */
 
-public class Page<T> {
+public class Page<T extends Serializable> implements Serializable {
     //  发送的  post 请求：   currentPage: 1, pageSize: 10
 
     // 当前页码

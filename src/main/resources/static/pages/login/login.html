@@ -8,12 +8,12 @@
     <title>RBAC管理端</title>
     <link rel="shortcut icon" href="../../images/head.jpg">
     <!-- 引入样式 -->
-    <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
+    <link rel="stylesheet" href="../../plugins/element-ui/index.css"/>
     <link rel="stylesheet" href="../../styles/common.css">
     <link rel="stylesheet" href="../../styles/login.css">
-    <link rel="stylesheet" href="../../styles/icon/iconfont.css" />
+    <link rel="stylesheet" href="../../styles/icon/iconfont.css"/>
     <style>
-        .body{
+        .body {
             min-width: 1366px;
         }
     </style>
@@ -24,21 +24,22 @@
     <div class="login-box">
         <img src="../../images/login/login-l.png" alt="">
         <div class="login-form">
-            <el-form ref="loginForm" :model="loginForm" :rules="loginRules" >
+            <el-form ref="loginForm" :model="loginForm" :rules="loginRules">
                 <div class="login-form-title">
-                    <img src="../../images/login/RBAC.png" style="width:139px;height:42px;" alt="" />
+                    <img src="../../images/login/RBAC.png" style="width:139px;height:42px;" alt=""/>
                 </div>
                 <el-form-item prop="userName">
                     <el-input
                             v-model="loginForm.userName" type="text" auto-complete="off" placeholder="账号" maxlength="20"
-                              prefix-icon="iconfont icon-user">
+                            prefix-icon="iconfont icon-user">
 
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
                     <el-input
-                            v-model="loginForm.password" type="password" placeholder="密码" prefix-icon="iconfont icon-lock" maxlength="20"
-                              @keyup.enter.native="handleLogin">
+                            v-model="loginForm.password" type="password" placeholder="密码"
+                            prefix-icon="iconfont icon-lock" maxlength="20"
+                            @keyup.enter.native="handleLogin">
                     </el-input>
                 </el-form-item>
                 <el-form-item style="width:100%;">
@@ -63,14 +64,14 @@
 <script src="../../js/validate.js"></script>
 <script src="../../js/request.js"></script>
 <script src="../../api/login.js"></script>
-<script src="../../plugins/jsencrypt/jsencrypt.min.js" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsrsasign/10.5.1/jsrsasign-all-min.js"></script>
 
 <script>
     new Vue({
         el: '#login-app',
         data() {
             return {
-                loginForm:{
+                loginForm: {
                     userName: 'admin',
                     password: 'admin123'
                 },
@@ -83,8 +84,8 @@
         computed: {
             loginRules() {
                 return {
-                    'userName': [{ 'validator': checkUserName, 'trigger': 'blur' }],
-                    'password': [{ 'validator': checkPassword, 'trigger': 'blur' }]
+                    'userName': [{'validator': checkUserName, 'trigger': 'blur'}],
+                    'password': [{'validator': checkPassword, 'trigger': 'blur'}]
                 }
             }
         },
@@ -92,7 +93,7 @@
             this.init();
         },
         methods: {
-            async init () {
+            async init() {
                 await getPublicKey().then(res => {
                     if (String(res.code) === '1') {
                         this.publicKeyAlg = res.algorithm
@@ -110,11 +111,11 @@
                         // 保存旧密码
                         this.oldPassword = this.loginForm.password
                         // 加密 password with publicKey
-                        this.loginForm.password = this.encryptPassword(this.loginForm.password,this.publicKey,this.publicKeyAlg)
+                        this.loginForm.password = this.encryptPassword(this.loginForm.password, this.publicKey, this.publicKeyAlg)
                         let res = await loginApi(this.loginForm)
                         if (String(res.code) === '1') {
-                            localStorage.setItem('userInfo',JSON.stringify(res.data))
-                            window.location.href= CONTEXT_PATH + '/pages/index.html'
+                            localStorage.setItem('userInfo', JSON.stringify(res.data))
+                            window.location.href = CONTEXT_PATH + '/pages/index.html'
                         } else {
                             this.loginForm.password = this.oldPassword;
                             this.$message.error(res.msg)
@@ -124,14 +125,23 @@
                 })
             },
 
-            encryptPassword(password,publicKeyBase64, publicKeyAlg){
-                // RSA 利用 publicKey 对称加密
-                if (publicKeyAlg ==='RSA'){
-                    let encryptor = new JSEncrypt();
-                    encryptor.setPublicKey(publicKeyBase64);
-                    let s = encryptor.encrypt(password);
-                    return s;//默认返回Base64格式
+            encryptPassword(password, publicKeyBase64, publicKeyAlg) {
+                if (publicKeyAlg === 'RSA') {
+                    return this.rsaPublicData(password, publicKeyBase64);
                 }
+            },
+
+            rsaPublicData(data, publicKey) {
+                console.log("进入加密方法：" + data);
+                data = encodeURIComponent(data);
+                let ppKey = '-----BEGIN PUBLIC KEY-----\n';
+                ppKey += publicKey + '\n';
+                ppKey += '-----END PUBLIC KEY-----';
+                const pubKey = KEYUTIL.getKey(ppKey);
+                const encrypted = KJUR.crypto.Cipher.encrypt(data, pubKey, "RSAOAEP");
+                const encryptedBase64 = hextob64(encrypted);
+                console.log("加密结果：" + encryptedBase64);
+                return encryptedBase64;
             }
 
 

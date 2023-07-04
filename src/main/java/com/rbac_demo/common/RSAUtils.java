@@ -1,7 +1,10 @@
 package com.rbac_demo.common;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import java.nio.charset.StandardCharsets;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import java.security.*;
 import java.util.Base64;
 
@@ -14,11 +17,11 @@ import java.util.Base64;
 
 public class RSAUtils {
 
-    public static String DEFAULT_ALG = "RSA";
+    private RSAUtils(){}
+    public static final String DEFAULT_ALG = "RSA";
 
     // 前端默认的填充方式！
-//    private static final String PADDING = "RSA/ECB/NoPadding";
-    private static final String PADDING = "RSA";
+    private static final String PADDING = "RSA/ECB/OAEPWithSHA-1AndMGF1PADDING";
 
 
     /**
@@ -26,9 +29,9 @@ public class RSAUtils {
      * @return 生成RSA 公钥和私钥
      * @throws Exception
      */
-    public static KeyPair getKeyPair() throws Exception{
+    public static KeyPair getKeyPair() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(DEFAULT_ALG);
-        keyPairGenerator.initialize(1024);
+        keyPairGenerator.initialize(2048);
         return keyPairGenerator.generateKeyPair();
     }
 
@@ -39,15 +42,14 @@ public class RSAUtils {
      * @return BASE64 编码的加密内容
      * @throws Exception
      */
-    public static String encryptBase64(String content,PublicKey publicKey) throws Exception{
+    public static String encryptBase64(String content,PublicKey publicKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         // 公钥加密
         Cipher cipher = Cipher.getInstance(PADDING);
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
         byte[] encryptedBytes  =  cipher.doFinal(content.getBytes());
         // 抓化成 base64编码
-        String base64String = Base64.getEncoder().encodeToString(encryptedBytes);
 
-        return base64String;
+        return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
     /**
@@ -57,13 +59,13 @@ public class RSAUtils {
      * @return 返回解密的内容
      * @throws Exception
      */
-    public static String decryptBase64(String base64EncryptedString,PrivateKey privateKey) throws Exception{
+    public static String decryptBase64(String base64EncryptedString,PrivateKey privateKey) throws NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
         byte[] encryptedBytes = Base64.getDecoder().decode(base64EncryptedString);
         Cipher cipher = Cipher.getInstance(PADDING);
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
-        String content = new String(decryptedBytes);
-        return content;
+        return new String(decryptedBytes);
+
     }
 
 

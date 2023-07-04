@@ -4,10 +4,9 @@ package com.rbac_demo.controller.advice;
 import com.rbac_demo.entity.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,9 +20,9 @@ import java.sql.SQLIntegrityConstraintViolationException;
  */
 
 @RestControllerAdvice(annotations = {RestController.class, Controller.class})
-public class customExceptionAdvice {
+public class CustomExceptionAdvice {
 
-    private static final Logger log = LoggerFactory.getLogger(customExceptionAdvice.class);
+    private static final Logger log = LoggerFactory.getLogger(CustomExceptionAdvice.class);
 
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public R<String> exceptionHandler(SQLIntegrityConstraintViolationException ex){
@@ -38,7 +37,8 @@ public class customExceptionAdvice {
 
     @ExceptionHandler(CustomException.class)
     public R<String> handleException(Exception ex) {
-        log.error("[发生错误]： " + ex.getMessage());
+        String msg = String.format("[发生错误]： %s",ex.getMessage());
+        log.error(msg);
         return R.error(ex.getMessage());
     }
 

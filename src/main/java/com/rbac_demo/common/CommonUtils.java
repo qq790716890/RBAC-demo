@@ -12,18 +12,20 @@ import java.util.UUID;
  * @effect :
  */
 public class CommonUtils {
+    private CommonUtils() {
+    }
 
     // MD5加密
-    public static String md5(String key){
-        if (StringUtils.isBlank(key)){
+    public static String md5(String key) {
+        if (StringUtils.isBlank(key)) {
             return null;
         }
         return DigestUtils.md5DigestAsHex(key.getBytes());
     }
 
     // 生成随机字符串
-    public static String generateUUID(){
-        return UUID.randomUUID().toString().replaceAll("-","");
+    public static String generateUUID() {
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
 
