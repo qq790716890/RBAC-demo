@@ -3,6 +3,7 @@ package com.rbac_demo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @author : lzy
@@ -12,6 +13,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 
 @SpringBootApplication
 @ServletComponentScan   // 该注解不加，@W
+@EnableTransactionManagement
 public class RbacApplication {
     public static void main(String[] args) {
         SpringApplication.run(RbacApplication.class);
