@@ -3,6 +3,7 @@ package com.rbac_demo.service;
 
 import com.rbac_demo.common.PermissionUtils;
 import com.rbac_demo.common.RSAUtils;
+import com.rbac_demo.controller.advice.CustomException;
 import com.rbac_demo.dao.DepartmentMapper;
 import com.rbac_demo.dao.EmployeeMapper;
 import com.rbac_demo.dao.JobTitleMapper;
@@ -52,7 +53,9 @@ public class EmployeeService {
 
     public void fillEmpInfo(Employee employee){
         JobTitle jobTitle = jobTitleMapper.findJobTitleById(employee.getJobTitleId());
+        if (jobTitle == null) throw new CustomException("员工的职位ID不正确！");
         Department department = departmentMapper.findDepartmentById(employee.getDepartmentId());
+        if (department == null) throw new CustomException("员工的部门ID不正确！");
         employee.setJobTitleName(jobTitle.getName());
         employee.setJobRank(jobTitle.getRank());
         employee.setDepartmentName(department.getName());
@@ -82,11 +85,11 @@ public class EmployeeService {
         return employeeMapper.updateOne(employee);
     }
 
-    public int updateOneStatus(int id, int status) {
+    public int updateOneStatus(long id, int status) {
         return employeeMapper.updateOneStatus(id,status);
     }
 
-    public int deleteOneById(int id) {
+    public int deleteOneById(long id) {
         return employeeMapper.updateOneByDel(id);
     }
 
@@ -98,7 +101,7 @@ public class EmployeeService {
         return employeeMapper.selectCountByJobId(id);
     }
 
-    public Department selectOneByIdForUpdate(Long id) {
+    public Employee selectOneByIdForUpdate(Long id) {
         return employeeMapper.selectOneByIdForUpdate(id);
     }
 }

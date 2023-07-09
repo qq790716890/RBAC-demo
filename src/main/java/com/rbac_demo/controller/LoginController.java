@@ -83,7 +83,7 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    public R<String> logout(@RequestBody Employee emp,@CookieValue("ticket") String ticket){
+    public R<String> logout(@CookieValue("ticket") String ticket){
         EmployeeContext.clear();
         // ticket 状态设置为1，表示失效
         loginTicketMapper.updateStatus(ticket,1);

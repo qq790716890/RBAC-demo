@@ -45,7 +45,7 @@
 
     <update id="updateOneByDel">
         UPDATE employee
-        SET is_deleted = 1
+        SET is_deleted = #{id}
         where id = #{id}
     </update>
 
@@ -109,7 +109,7 @@
     </select>
 
 
-    <select id="selectOneByIdForUpdate" resultType="Department">
+    <select id="selectOneByIdForUpdate" resultType="Employee">
         select <include refid="selectFields"></include>
         from employee
         where id = #{id}

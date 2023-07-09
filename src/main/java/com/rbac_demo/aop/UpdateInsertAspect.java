@@ -20,6 +20,8 @@ import org.springframework.transaction.TransactionStatus;
 
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Date;
 
 /**
@@ -50,7 +52,7 @@ public class UpdateInsertAspect {
     // 这是在 service 层面进行拦截的
 //    @Transactional   !!!!!!!!!!!!!!!!!! 在AOP中事务注解会失效，用手动的方式处理事务才可以奏效！！！！！！
     @Around("execution(* com.rbac_demo.service.*.update*(..)) && args(obj)")
-    public Object updateAspect(ProceedingJoinPoint pjp, Object obj) {
+    public Object updateAspect(ProceedingJoinPoint pjp, Object obj) throws Throwable {
         // 在这里进行参数修改 更新时间等
         // 这里这样写比较麻烦，还可以设置一个  UpdateTimeAware 接口，让这三个类实现这个接口设置值，
         // 然后传入的这里obj 就可以设置成 UpdateTimeAware对象，进行调用方法进行设置
@@ -58,11 +60,12 @@ public class UpdateInsertAspect {
         TransactionStatus status = null;
         try {
             // 开启事务
-            //
+            // 这里 update使用的是 悲观锁，使用select for update 悲观锁的形式。
+            // ！！！！！如果不需要进行select操作进行逻辑判断再更新的话，只有update语句的话，在update语句中使用version乐观锁就好！！！！！！！
             status = transactionManager.getTransaction(new DefaultTransactionDefinition());
             if (obj instanceof Employee) {
-                updateEmp((Employee) obj, currentUserId);
-
+                Employee updateEmp = (Employee) obj;
+                updateEmp(updateEmp, currentUserId);
             } else if (obj instanceof Department) {
                 updateDepartment((Department) obj, currentUserId);
 
@@ -79,12 +82,14 @@ public class UpdateInsertAspect {
             if (status != null) {
                 transactionManager.rollback(status);
             }
-            throw new CustomException(e.getMessage());
+            throw e;
         }
     }
 
     private void updateJobTitle(JobTitle jobTitle, Long currentUserId) {
-        Date preDate = jobTitleService.selectOneByIdForUpdate(jobTitle.getId()).getUpdateTime();
+        JobTitle job = jobTitleService.selectOneByIdForUpdate(jobTitle.getId());
+        if (job == null) throw new CustomException("更新的职位id不存在");
+        Date preDate = job.getUpdateTime();
         // 更新的期间，已经被人修改了。
         if (preDate != null && !preDate.equals(jobTitle.getUpdateTime())) {
             throw new CustomException(MSG_MODIFIED);
@@ -94,7 +99,9 @@ public class UpdateInsertAspect {
     }
 
     private void updateDepartment(Department department, Long currentUserId) {
-        Date preDate = departmentService.selectOneByIdForUpdate(department.getId()).getUpdateTime();
+        Department department1 = departmentService.selectOneByIdForUpdate(department.getId());
+        if (department1 == null) throw new CustomException("更新的部门id不存在");
+        Date preDate = department1.getUpdateTime();
         // 更新的期间，已经被人修改了。
         if (preDate != null && !preDate.equals(department.getUpdateTime())) {
             throw new CustomException(MSG_MODIFIED);
@@ -106,7 +113,9 @@ public class UpdateInsertAspect {
 
     private void updateEmp(Employee employee, Long currentUserId) {
         // 查询原对象时间
-        Date preDate = employeeService.selectOneByIdForUpdate(employee.getId()).getUpdateTime();
+        Employee emp = employeeService.selectOneByIdForUpdate(employee.getId());
+        if (emp == null) throw new CustomException("更新的员工id不存在");
+        Date preDate = emp.getUpdateTime();
         // 更新的期间，已经被人修改了。
         if (preDate != null && !preDate.equals(employee.getUpdateTime())) {
             throw new CustomException(MSG_MODIFIED);

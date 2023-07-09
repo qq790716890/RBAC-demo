@@ -1,0 +1,15 @@
+
+NWeb:AvoidCommentedOutCodeCheckY"Remove this commented out code.(±ë·çşÿÿÿÿ
+NWeb:AvoidCommentedOutCodeCheckZ"Remove this commented out code.(Úª°Ëøÿÿÿÿ
+HWeb:AvoidCommentedOutCodeCheck["Remove this commented out code.(Üõø
+
+IWeb:AvoidCommentedOutCodeCheck\"Remove this commented out code.(ÁåÂ¿
+NWeb:AvoidCommentedOutCodeCheck_"Remove this commented out code.(åê¹ÿÿÿÿÿ
+_javascript:S1848v"CEither remove this useless object instantiation of "Vue" or use it.(™£ßß
+wjavascript:S2703¿"ZAdd the "let", "const" or "var" keyword to this declaration of "temp" to make it explicit.(Ó‘¹û
+}javascript:S2703À"[Add the "let", "const" or "var" keyword to this declaration of "temp2" to make it explicit.(šï¤Şûÿÿÿÿ
+njavascript:S4138Ô"LExpected a `for-of` loop instead of a `for` loop with this simple iteration.(–«şøÿÿÿÿ
+;javascript:S125Ü"Remove this commented out code.(´û‘¹
+:javascript:S125à"Remove this commented out code.(Á¾f
+gjavascript:S905ô"FExpected an assignment or function call and instead saw an expression.(§‘×¯ÿÿÿÿÿ
+qjavascript:S3776…"TRefactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.(Ìºµˆ

@@ -3,6 +3,7 @@ package com.rbac_demo.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * @author : lzy
@@ -88,6 +89,7 @@ public class Department implements Serializable {
     public void setUpdateUserId(Long updateUserId) {
         this.updateUserId = updateUserId;
     }
+
 
     @Override
     public String toString() {

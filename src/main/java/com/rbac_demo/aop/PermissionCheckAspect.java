@@ -6,6 +6,7 @@ import com.rbac_demo.annotation.RequiresPermissions;
 import com.rbac_demo.common.EmployeeContext;
 import com.rbac_demo.common.PermissionUtils;
 
+import com.rbac_demo.controller.advice.CustomException;
 import com.rbac_demo.entity.R;
 import com.rbac_demo.controller.DepartmentController;
 import com.rbac_demo.controller.EmployeeController;
@@ -64,7 +65,7 @@ public class PermissionCheckAspect {
         log.debug("开始校验[操作权限]");
         // 登录员工已有的权限
         Employee loginEmp = EmployeeContext.getEmployee();
-        String[] hasPermissions = loginEmp.getPermissions();
+        String[] hasPermissions =  loginEmp.getPermissions();
 
         // 获取 annotation
         Signature signature = joinPoint.getSignature();
@@ -82,7 +83,6 @@ public class PermissionCheckAspect {
             // 没有权限.
             String msg = String.format("登录用户: [%s] 没有访问权限！",loginEmp.getUserName());
             log.debug(msg);
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return R.error("权限不足");
         }
 
@@ -95,7 +95,6 @@ public class PermissionCheckAspect {
                 // 没有权限.
                 String msg = String.format("登录用户: [%s] 没有访问权限！", loginEmp.getUserName());
                 log.debug(msg);
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 return R.error("没有权限！");
         }
         return joinPoint.proceed();
@@ -129,12 +128,14 @@ public class PermissionCheckAspect {
         if (DepartmentController.class.isAssignableFrom(clazz)) {
             // DepartmentController 下的 id 参数
             Department department = departmentService.selectOneById((int) id);
+            if (department == null) throw new CustomException("需要查询的部门ID不存在！");
             return PermissionUtils.checkDepartmentRank(employee, department);
 
         } else if (EmployeeController.class.isAssignableFrom(clazz)) {
             // clazz不是 EmployeeController 类或其子类
             // EmployeeController 下的 id 参数
             Employee employee1 = employeeService.selectOneById(id);
+            if (employee1 == null) throw new CustomException("需要查询的用户ID不存在！");
             employeeService.fillEmpInfo(employee1);
             return PermissionUtils.checkEmpRank(employee, employee1);
 
@@ -142,6 +143,7 @@ public class PermissionCheckAspect {
             // clazz不是 JobTitleController 类或其子类
             // JobTitleController 下的 id 参数
             JobTitle jobTitle = jobTitleService.selectOneById((int) id);
+            if (jobTitle == null) throw new CustomException("需要查询的职位ID不存在！");
             return PermissionUtils.checkJobTitleRank(employee.getJobRank(), jobTitle.getRank());
         } else {
             throw new IllegalArgumentException();
@@ -152,7 +154,7 @@ public class PermissionCheckAspect {
     private boolean checkJobTitle(Employee employee, JobTitle jobTitle) {
         // 参数校验
         if ( jobTitle.getRank() == null)
-            throw new IllegalArgumentException(INCORRECT_PARAMETER);
+            throw new CustomException(INCORRECT_PARAMETER);
 
         return PermissionUtils.checkJobTitleRank(employee.getJobRank(), jobTitle.getRank());
     }
@@ -160,7 +162,7 @@ public class PermissionCheckAspect {
     private boolean checkDepartment(Employee employee, Department dep) {
         // 参数校验
         if (dep.getRank() == null)
-            throw new IllegalArgumentException(INCORRECT_PARAMETER);
+            throw new CustomException(INCORRECT_PARAMETER);
 
         return PermissionUtils.checkDepartmentRank(employee, dep);
     }
@@ -168,7 +170,7 @@ public class PermissionCheckAspect {
     private boolean checkEmployee(Employee employee, Employee employee1) {
         // 参数校验
         if (employee1.getDepartmentId()==null || employee1.getJobTitleId()==null)
-            throw new IllegalArgumentException(INCORRECT_PARAMETER);
+            throw new CustomException(INCORRECT_PARAMETER);
         employeeService.fillEmpInfo(employee1);
         return PermissionUtils.checkEmpRank(employee, employee1);
     }

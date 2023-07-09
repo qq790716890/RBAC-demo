@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 /**
@@ -24,19 +25,22 @@ public class CustomExceptionAdvice {
 
     private static final Logger log = LoggerFactory.getLogger(CustomExceptionAdvice.class);
 
-    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public R<String> exceptionHandler(SQLIntegrityConstraintViolationException ex){
+    @ExceptionHandler(SQLException.class)
+    public R<String> exceptionHandler(SQLException ex){
         log.error(ex.getMessage());
-        if(ex.getMessage().contains("Duplicate entry")){
-            String[] split = ex.getMessage().split(" ");
-            String msg = split[2]+"已存在";
-            return R.error(msg);
+        if (ex instanceof SQLIntegrityConstraintViolationException) {
+            if (ex.getMessage().contains("Duplicate entry")) {
+                String[] split = ex.getMessage().split(" ");
+                String dup = split[2].split("-")[0].substring(1);
+                String msg = "[" + dup + "]"+ "已存在";
+                return R.error(msg);
+            }
         }
         return R.error("未知错误");
     }
 
     @ExceptionHandler(CustomException.class)
-    public R<String> handleException(Exception ex) {
+    public R<String> handleException(CustomException ex) {
         String msg = String.format("[发生错误]： %s",ex.getMessage());
         log.error(msg);
         return R.error(ex.getMessage());

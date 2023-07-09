@@ -89,8 +89,8 @@ public class PermissionUtils implements ConstantUtils {
 
     }
 
-    public static boolean checkJobTitleRank(int empRank, int jobRank) {
-        return intComp(empRank, jobRank, CMP.LESS_EQ);
+    public static boolean checkJobTitleRank(int empJobRank, int jobRank) {
+        return intComp(empJobRank, jobRank, CMP.LESS_EQ);
     }
 
     public static boolean checkDepartmentRank(Employee employee, Department dep) {

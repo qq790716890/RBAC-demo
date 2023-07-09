@@ -91,7 +91,6 @@ public class LoginFilter implements Filter {
                 employeeService.fillEmpInfo(employee);
                 // 在本次请求中持有用户
                 EmployeeContext.setEmployee(employee);
-                // 构建用户认证的结果，并存入SecurityContext,以便于Security进行授权
                 filterChain.doFilter(request,response);
                 return;
             }

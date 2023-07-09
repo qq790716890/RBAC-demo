@@ -1,0 +1,10 @@
+
+NWeb:AvoidCommentedOutCodeCheckn"Remove this commented out code.(±ë·çşÿÿÿÿ
+NWeb:AvoidCommentedOutCodeChecko"Remove this commented out code.(Úª°Ëøÿÿÿÿ
+HWeb:AvoidCommentedOutCodeCheckp"Remove this commented out code.(Üõø
+
+IWeb:AvoidCommentedOutCodeCheckq"Remove this commented out code.(ÁåÂ¿
+NWeb:AvoidCommentedOutCodeCheckt"Remove this commented out code.(åê¹ÿÿÿÿÿ
+`javascript:S1848"CEither remove this useless object instantiation of "Vue" or use it.(™£ßß
+|javascript:S2703Ø"ZAdd the "let", "const" or "var" keyword to this declaration of "temp" to make it explicit.(çºä¤úÿÿÿÿ
+qjavascript:S3776ë"TRefactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.(Ìºµˆ

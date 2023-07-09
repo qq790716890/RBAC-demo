@@ -33,7 +33,7 @@ public class EmployeeController implements ConstantUtils {
     @RequiresPermissions(value = {EMP_READ})
     @PostMapping("/list")
     public R<Page<Employee>> list(@RequestBody Page<Employee> page){
-        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) return R.error("请求参数不合法");
+        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) return R.error("请求参数不合法！");
         List<Employee> employees = employeeService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());
 
 
@@ -53,7 +53,7 @@ public class EmployeeController implements ConstantUtils {
     @GetMapping("/query/{id}")
     public R<Employee> queryOne(@PathVariable("id")  Long id){
         Employee employee = employeeService.selectOneById(id);
-        if (employee == null) return R.error("用户不存在！");
+//        if (employee == null) return R.error("用户不存在！");    会在AOP权限校验那里，就判断到了不存在
         employeeService.fillEmpInfo(employee);
         return R.success(employee);
     }
@@ -86,7 +86,7 @@ public class EmployeeController implements ConstantUtils {
 
     @RequiresPermissions(value = {EMP_READ},rankCheck = true)
     @PutMapping("/updateStatus/{id}")
-    public R<String> updateStatus(@PathVariable("id") int id, @RequestBody Map<String, Integer> map){
+    public R<String> updateStatus(@PathVariable("id") long id, @RequestBody Map<String, Integer> map){
         if (map == null) return R.error("输入为空！");
         int status = map.get("status");
         int ret = employeeService.updateOneStatus(id,status);
@@ -98,12 +98,12 @@ public class EmployeeController implements ConstantUtils {
 
     @RequiresPermissions(value = {EMP_DELETE},rankCheck = true)
     @DeleteMapping("/delete/{id}")
-    public R<String> deleteOneById(@PathVariable("id")  int id){
+    public R<String> deleteOneById(@PathVariable("id")  long id){
         int ret = employeeService.deleteOneById(id);
         if (ret == 0){
-            return R.error("删除失败！");
+            return R.error("删除失败!");
         }
-        return R.success("删除成功");
+        return R.success("删除成功!");
     }
 
 

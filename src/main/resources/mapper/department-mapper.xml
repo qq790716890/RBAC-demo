@@ -37,7 +37,7 @@
 
     <update id="updateOneByDel">
         UPDATE department
-        set is_deleted = 1
+        set is_deleted = #{id}
         WHERE id = #{id};
     </update>
 
@@ -77,7 +77,7 @@
     <select id="selectLimitById" resultType="Department">
         select d2.id, d2.name, d2.rank, d2.description,d2.create_time, d2.create_user_id,d2.update_time,d2.update_user_id
         from department d1, department d2
-        where d1.id = #{id} and (d1.rank &lt; d2.rank or d1.name = d2.name)
+        where d1.id = #{id} and (d1.rank &lt; d2.rank or d1.name = d2.name) and d2.is_deleted = 0
     </select>
 
     <select id="selectAllCount" resultType="Integer">

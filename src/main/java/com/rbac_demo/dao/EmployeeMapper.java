@@ -26,9 +26,9 @@ public interface EmployeeMapper {
 
     int updateOne(Employee employee);
 
-    int updateOneStatus(int id, int status);
+    int updateOneStatus(long id, int status);
 
-    int updateOneByDel(int id);
+    int updateOneByDel(long id);
 
     int selectCountByDepId(int id);
 
@@ -36,5 +36,5 @@ public interface EmployeeMapper {
 
     int selectAllCount(String name);
 
-    Department selectOneByIdForUpdate(Long id);
+    Employee selectOneByIdForUpdate(Long id);
 }

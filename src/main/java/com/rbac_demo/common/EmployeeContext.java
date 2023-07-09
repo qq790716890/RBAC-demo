@@ -28,23 +28,20 @@ public class EmployeeContext {
 
     public static void setEmployee(Employee employee) {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (requestAttributes == null) throw new CustomException(ERR);
-
-        HttpServletRequest request = requestAttributes.getRequest();
-        request.getSession().setAttribute(EMP, employee);
+        if (requestAttributes == null || requestAttributes.getRequest().getSession() == null) throw new CustomException(ERR);
+        requestAttributes.getRequest().getSession().setAttribute(EMP, employee);
     }
 
     public static Employee getEmployee() {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (requestAttributes == null) throw new CustomException(ERR);
+        if (requestAttributes == null || requestAttributes.getRequest().getSession() == null) throw new CustomException(ERR);
 
-        HttpServletRequest request = requestAttributes.getRequest();
-        return (Employee) request.getSession().getAttribute(EMP);
+        return (Employee) requestAttributes.getRequest().getSession().getAttribute(EMP);
     }
 
     public static void clear() {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (requestAttributes == null) throw new CustomException(ERR);
+        if (requestAttributes == null || requestAttributes.getRequest().getSession() == null) throw new CustomException(ERR);
 
         HttpServletRequest request = requestAttributes.getRequest();
         request.getSession().removeAttribute(EMP);
@@ -53,16 +50,15 @@ public class EmployeeContext {
 
     public static void setKeyPair(KeyPair keyPair) {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (requestAttributes == null) throw new CustomException(ERR);
+        if (requestAttributes == null || requestAttributes.getRequest().getSession() == null) throw new CustomException(ERR);
 
-        HttpServletRequest request = requestAttributes.getRequest();
-        request.getSession().setAttribute(KEY_PAIR, keyPair);
+        requestAttributes.getRequest().getSession().setAttribute(KEY_PAIR, keyPair);
 
     }
 
     public static KeyPair getKeyPair() {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (requestAttributes == null) throw new CustomException(ERR);
+        if (requestAttributes == null || requestAttributes.getRequest().getSession() == null) throw new CustomException(ERR);
         HttpServletRequest request = requestAttributes.getRequest();
         return (KeyPair) request.getSession().getAttribute(KEY_PAIR);
     }

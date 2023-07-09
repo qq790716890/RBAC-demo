@@ -60,23 +60,19 @@ public class JobTitleController implements ConstantUtils {
 
         if (jobTitle.getId() == null) jobTitle.setUpdateTime(null); // 更新操作的话，不需要设置为空，会查数据库校验
         // 根据是否存在id，来判断是插入还是更新
+        // 部门名字不能冲突，必须唯一.用数据库唯一约束，且全局捕获
         if (jobTitle.getId() == null){
-            // 部门名字不能冲突，必须唯一
-            JobTitle jobTitle1 = jobTitleService.selectOneByName(jobTitle.getName());
-            if (jobTitle1!=null){
-                return R.error("职位名称冲突，请换个职位名称！");
-            }
             int ret = jobTitleService.insertOne(jobTitle);
             if (ret!=0){
-                return R.success("新增职位成功");
+                return R.success("新增职位成功!");
             }
-            return R.error("新增职位失败！");
+            return R.error("新增职位失败!" );
         }else{
             int ret = jobTitleService.updateOne(jobTitle);
             if (ret!=0){
-                return R.success("更新职位成功");
+                return R.success("更新职位成功!");
             }
-            return R.error("更新职位失败！");
+            return R.error("更新职位失败!");
         }
     }
 
@@ -85,7 +81,7 @@ public class JobTitleController implements ConstantUtils {
     @GetMapping("/query/{id}")
     public R<JobTitle> queryOneById(@PathVariable("id")  int id){
         JobTitle jobTitle = jobTitleService.selectOneById(id);
-        if (jobTitle == null) return R.error("部门不存在！");
+//        if (jobTitle == null) return R.error("部门不存在！");  会在AOP权限校验那里，就判断到了不存在
         return R.success(jobTitle);
     }
 
@@ -94,12 +90,12 @@ public class JobTitleController implements ConstantUtils {
     public R<String> deleteOneById(@PathVariable("id")  int id){
         // 删除前，检查是否还存在该jobTitle的员工
         int cnt = employeeService.selectCountByJobId(id);
-        if (cnt >0) return R.error("不能删除该职位，还有员工在该职位上！");
+        if (cnt >0) return R.error("不能删除该职位，还有员工在该职位上!");
         int ret = jobTitleService.deleteOneById(id);
         if (ret == 0){
-            return R.error("删除失败！");
+            return R.error("删除失败!");
         }
-        return R.success("删除成功");
+        return R.success("删除成功!");
     }
 
     @RequiresPermissions(value = {JOBTITLE_READ},rankCheck = true)

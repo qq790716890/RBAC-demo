@@ -59,22 +59,18 @@ public class DepartmentController implements ConstantUtils {
 
         // 根据是否存在id，来判断是插入还是更新
         if (department.getId() == null){
-            // 部门名字不能冲突，必须唯一
-            Department department1 = departmentService.selectOneByName(department.getName());
-            if (department1!=null){
-                return R.error("部门名称冲突，请换个部门名称！");
-            }
+            // 部门名字不能冲突，必须唯一，唯一性判断在数据库增面设置了，且通过全局异常捕获了
             int ret = departmentService.insertOne(department);
             if (ret!=0){
-                return R.success("新增部门成功");
+                return R.success("新增部门成功!");
             }
-            return R.error("新增部门失败！");
+            return R.error("新增部门失败!");
         }else{
             int ret = departmentService.updateOne(department);
             if (ret!=0){
-                return R.success("更新部门成功");
+                return R.success("更新部门成功!");
             }
-            return R.error("更新部门失败！");
+            return R.error("更新部门失败!");
         }
     }
 
@@ -82,7 +78,7 @@ public class DepartmentController implements ConstantUtils {
     @GetMapping("/query/{id}")
     public R<Department> queryOneById(@PathVariable("id")  int id){
         Department department = departmentService.selectOneById(id);
-        if (department == null) return R.error("部门不存在！");
+//        if (department == null) return R.error("部门不存在！");  会在AOP权限校验那里，就判断到了不存在
         return R.success(department);
     }
 
@@ -94,9 +90,9 @@ public class DepartmentController implements ConstantUtils {
         if (cnt >0) return R.error("不能删除该部门，还有员工在该部门中！");
         int ret = departmentService.deleteOneById(id);
         if (ret == 0){
-            return R.error("删除失败！");
+            return R.error("删除失败!");
         }
-        return R.success("删除成功");
+        return R.success("删除成功!");
     }
 
 
