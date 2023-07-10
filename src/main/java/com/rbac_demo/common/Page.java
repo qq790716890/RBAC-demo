@@ -2,6 +2,7 @@ package com.rbac_demo.common;
 
 
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +17,10 @@ public class Page<T extends Serializable> implements Serializable {
     //  发送的  post 请求：   currentPage: 1, pageSize: 10
 
     // 当前页码
+    @NotNull(message = "当前页码不能为空")
     private Integer currentPage = 1;
     // 显示上限
+    @NotNull(message = "页面大小不能为空")
     private Integer pageSize = 10;
 
     //搜索的名称

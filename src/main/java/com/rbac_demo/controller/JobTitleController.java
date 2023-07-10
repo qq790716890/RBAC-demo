@@ -13,6 +13,7 @@ import com.rbac_demo.service.JobTitleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -36,9 +37,7 @@ public class JobTitleController implements ConstantUtils {
 
     @RequiresPermissions(value = {JOBTITLE_READ})
     @PostMapping("/list")
-    public R<Page<JobTitle>> list(@RequestBody Page<JobTitle> page){
-        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) return R.error("请求参数不合法！");
-
+    public R<Page<JobTitle>> list(@RequestBody @Valid Page<JobTitle> page){
         List<JobTitle> jobTitles = jobTitleService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());
         int rows = jobTitleService.selectAllCount(page.getName());
         page.setRows(rows);
@@ -49,14 +48,11 @@ public class JobTitleController implements ConstantUtils {
 
     @RequiresPermissions(value = {JOBTITLE_UPDATE,JOBTITLE_INSERT},rankCheck = true,logical = Logical.OR)
     @PostMapping("/add")
-    public R<String> add(@RequestBody JobTitle jobTitle){
-        if (jobTitle == null) throw new IllegalArgumentException("请求参数为空！");
-
+    public R<String> add(@RequestBody @Valid JobTitle jobTitle){
         // 置空，防止用户给定
         jobTitle.setCreateTime(null);
         jobTitle.setCreateUserId(null);
         jobTitle.setUpdateUserId(null);
-
 
         if (jobTitle.getId() == null) jobTitle.setUpdateTime(null); // 更新操作的话，不需要设置为空，会查数据库校验
         // 根据是否存在id，来判断是插入还是更新

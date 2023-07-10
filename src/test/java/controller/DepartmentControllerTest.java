@@ -13,6 +13,7 @@ import com.alibaba.fastjson2.TypeReference;
 import com.rbac_demo.RbacApplication;
 import com.rbac_demo.common.Page;
 import com.rbac_demo.common.RandomUtil;
+import com.rbac_demo.controller.advice.CustomException;
 import com.rbac_demo.entity.Department;
 import com.rbac_demo.entity.Department;
 import com.rbac_demo.entity.R;
@@ -115,7 +116,7 @@ public class DepartmentControllerTest {
         // 将 JSON 字符串转换为泛型对象
         R<String> retObj2 = JSON.parseObject(retContentString, typeReference2);
 
-        Assertions.assertEquals("请求参数不合法！", retObj2.getMsg());
+        Assertions.assertEquals("请检查请求参数是否正确!", retObj2.getMsg());
 
         // 3- 传参，参数为空
         url = preUrl + "/list";
@@ -132,7 +133,7 @@ public class DepartmentControllerTest {
         };
         // 将 JSON 字符串转换为泛型对象
         R<String> retObj3 = JSON.parseObject(retContentString, typeReference2);
-        Assertions.assertEquals("请求参数不合法！", retObj2.getMsg());
+        Assertions.assertEquals("请检查请求参数是否正确!", retObj2.getMsg());
 
     }
 
@@ -297,6 +298,20 @@ public class DepartmentControllerTest {
         retObj = JSON.parseObject(retContentString, typeReference1);
         retMsg = retObj.getMsg();
         Assertions.assertTrue(retMsg.contains("不存在"));
+
+        // 5. 更新对象被改了
+        insertObj.setName(RandomUtil.getRandString());
+        insertObj.setId(22);
+        content = JSON.toJSONString(insertObj);
+        expectStatus = MockMvcResultMatchers.status().isOk();
+        resultActions = sendRequest(mockMvc, url, method, content, cookieTicket, expectStatus);
+        mvcResult = resultActions.andReturn();
+        contentBytes = mvcResult.getResponse().getContentAsByteArray();
+        retContentString = new String(contentBytes, StandardCharsets.UTF_8);
+        typeReference1 = new TypeReference<>() {};
+        retObj = JSON.parseObject(retContentString, typeReference1);
+        retMsg = retObj.getMsg();
+        Assertions.assertTrue( retMsg.contains("已经被更新"));
     }
 
     @Test

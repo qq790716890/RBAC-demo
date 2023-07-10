@@ -1,6 +1,11 @@
 package com.rbac_demo.entity;
 
 
+import org.hibernate.validator.constraints.Range;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
@@ -16,16 +21,21 @@ public class Employee implements Serializable {
     // 唯一userId
     private Long id;
     // 登陆账号 和 密码
+    @NotBlank(message = "员工账号不能为空")
     private String userName;
+    @NotBlank(message = "员工密码不能为空")
     private String password;
 
+    @NotBlank(message = "员工姓名不能为空")
     private String name;
+    @Range(min = 0,max = 1)
     private Integer status;     // 0 禁用，非0 激活的状态
-
+    @NotNull(message = "部门id不能为空")
     private Integer departmentId;
     private String departmentName;
     private Integer depRank;    // 部门级别
 
+    @NotNull(message = "职位id不能为空")
     private Integer jobTitleId;
     private String jobTitleName;
     private Integer jobRank;    // 职位级别

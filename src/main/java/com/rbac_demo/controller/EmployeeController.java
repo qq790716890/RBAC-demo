@@ -1,5 +1,6 @@
 package com.rbac_demo.controller;
 
+import com.rbac_demo.VO.StatusVO;
 import com.rbac_demo.annotation.Logical;
 import com.rbac_demo.annotation.RequiresPermissions;
 
@@ -11,10 +12,11 @@ import com.rbac_demo.entity.Employee;
 import com.rbac_demo.service.EmployeeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author : lzy
@@ -24,6 +26,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/employee")
+@Validated
 public class EmployeeController implements ConstantUtils {
 
     @Autowired
@@ -33,7 +36,7 @@ public class EmployeeController implements ConstantUtils {
     @RequiresPermissions(value = {EMP_READ})
     @PostMapping("/list")
     public R<Page<Employee>> list(@RequestBody Page<Employee> page){
-        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) return R.error("请求参数不合法！");
+        if (page.getPageSize() == null || page.getCurrentPage()==null ) return R.error("请求参数不合法！");
         List<Employee> employees = employeeService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());
 
 
@@ -60,8 +63,7 @@ public class EmployeeController implements ConstantUtils {
 
     @RequiresPermissions(value = {EMP_INSERT,EMP_UPDATE},rankCheck = true,logical = Logical.OR)
     @PostMapping("/add")
-    public R<String> add(@RequestBody Employee employee){
-        if (employee == null) return R.error("参数不能为空！");
+    public R<String> add(@RequestBody @Valid Employee employee){
 
         // 置空，防止用户给定
         employee.setCreateTime(null);
@@ -86,10 +88,8 @@ public class EmployeeController implements ConstantUtils {
 
     @RequiresPermissions(value = {EMP_READ},rankCheck = true)
     @PutMapping("/updateStatus/{id}")
-    public R<String> updateStatus(@PathVariable("id") long id, @RequestBody Map<String, Integer> map){
-        if (map == null) return R.error("输入为空！");
-        int status = map.get("status");
-        int ret = employeeService.updateOneStatus(id,status);
+    public R<String> updateStatus(@PathVariable("id") long id, @RequestBody @Valid StatusVO statusVO){
+        int ret = employeeService.updateOneStatus(id,statusVO.getStatus());
         if (ret == 1){
             return R.success("更新状态成功！");
         }

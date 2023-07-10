@@ -9,9 +9,11 @@ import com.rbac_demo.entity.Department;
 import com.rbac_demo.service.DepartmentService;
 import com.rbac_demo.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -22,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/department")
+@Validated
 public class DepartmentController implements ConstantUtils {
 
     @Autowired
@@ -35,9 +38,7 @@ public class DepartmentController implements ConstantUtils {
 
     @RequiresPermissions(DEP_READ)
     @PostMapping("/list")
-    public R<Page<Department>> list(@RequestBody Page<Department> page){
-        if (page == null || page.getPageSize() == null || page.getCurrentPage()==null ) return R.error("请求参数不合法！");
-
+    public R<Page<Department>> list(@RequestBody @Valid Page<Department> page){
         List<Department> departments = departmentService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());
         int rows = departmentService.selectAllCount(page.getName());
         page.setRows(rows);
@@ -47,10 +48,7 @@ public class DepartmentController implements ConstantUtils {
 
     @RequiresPermissions(value = {DEP_INSERT,DEP_UPDATE}, logical = Logical.OR,rankCheck = true)
     @PostMapping("/add")
-    public R<String> add(@RequestBody Department department){
-        if (department == null) return R.error("传参为空！");
-
-
+    public R<String> add(@RequestBody @Valid Department department){
         // 置空，防止用户给定
         department.setCreateTime(null);
         department.setCreateUserId(null);

@@ -346,6 +346,20 @@ public class EmployeeControllerTest {
         retObj = JSON.parseObject(retContentString, typeReference1);
         retMsg = retObj.getMsg();
         Assertions.assertTrue(retMsg.contains("不存在"));
+
+        // 5. 更新对象被改了
+        updateEmp.setName(RandomUtil.getRandString());
+        updateEmp.setId(10L);
+        content = JSON.toJSONString(updateEmp);
+        expectStatus = MockMvcResultMatchers.status().isOk();
+        resultActions = sendRequest(mockMvc, url, method, content, cookieTicket, expectStatus);
+        mvcResult = resultActions.andReturn();
+        contentBytes = mvcResult.getResponse().getContentAsByteArray();
+        retContentString = new String(contentBytes, StandardCharsets.UTF_8);
+        typeReference1 = new TypeReference<>() {};
+        retObj = JSON.parseObject(retContentString, typeReference1);
+        retMsg = retObj.getMsg();
+        Assertions.assertTrue( retMsg.contains("已经被更新"));
     }
 
 

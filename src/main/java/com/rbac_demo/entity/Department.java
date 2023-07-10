@@ -1,6 +1,8 @@
 package com.rbac_demo.entity;
 
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -16,7 +18,9 @@ public class Department implements Serializable {
 
     private Integer id;
 
+    @NotEmpty(message = "部门名称不能为空")
     private String name;
+    @NotNull(message = "部门级别不能为空")
     private Integer rank;    // 部门级别
     private String description; // 部门描述
 

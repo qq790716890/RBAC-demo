@@ -3,6 +3,7 @@ package utils;
 import com.rbac_demo.annotation.Logical;
 import com.rbac_demo.common.ConstantUtils;
 import com.rbac_demo.common.PermissionUtils;
+import com.rbac_demo.controller.advice.CustomException;
 import com.rbac_demo.entity.Department;
 import com.rbac_demo.entity.Employee;
 import org.junit.jupiter.api.Assertions;
@@ -121,5 +122,21 @@ public class PermissionUtilsTest {
     public void testIntComp_MoreEq() {
         boolean actual = PermissionUtils.intComp(3, 2, ConstantUtils.CMP.MORE_EQ);
         Assertions.assertTrue(actual);
+    }
+
+
+    @Test
+    public void test_checkEmpRank() {
+        Employee emp1 = new Employee();
+        Employee emp2 = new Employee();
+        Assertions.assertThrows(CustomException.class, ()->PermissionUtils.checkEmpRank(emp1,emp2));
+
+        emp1.setId(1L);
+        emp1.setDepRank(1);
+        emp1.setJobRank(1);
+        emp2.setId(1L);
+        emp2.setDepRank(1);
+        emp2.setJobRank(2);
+        Assertions.assertTrue(PermissionUtils.checkEmpRank(emp1,emp2));
     }
 }

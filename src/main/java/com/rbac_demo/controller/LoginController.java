@@ -1,6 +1,7 @@
 package com.rbac_demo.controller;
 
 
+import com.rbac_demo.VO.LoginVO;
 import com.rbac_demo.common.CommonUtils;
 import com.rbac_demo.common.ConstantUtils;
 import com.rbac_demo.common.EmployeeContext;
@@ -14,14 +15,16 @@ import com.rbac_demo.service.EmployeeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import javax.validation.Valid;
+import java.security.*;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +40,7 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
+@Validated
 public class LoginController {
 
     @Autowired
@@ -50,11 +54,11 @@ public class LoginController {
 
 
     @PostMapping("/login")
-    public R<Employee> login(@RequestBody Employee emp, HttpServletResponse response) throws Exception {
-        Employee findEmp = employeeService.findEmployeeByUserName(emp.getUserName());
+    public R<Employee> login(@RequestBody @Valid LoginVO loginVO, HttpServletResponse response) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        Employee findEmp = employeeService.findEmployeeByUserName(loginVO.getUserName());
 
         PrivateKey aPrivate = EmployeeContext.getKeyPair().getPrivate();
-        if (findEmp == null || !employeeService.checkRsaPassword(emp.getPassword(), findEmp.getPassword(), aPrivate)){
+        if (findEmp == null || !employeeService.checkRsaPassword(loginVO.getPassword(), findEmp.getPassword(), aPrivate)){
             return R.error("用户或密码错误！");
         }
         if (findEmp.getStatus()==0){

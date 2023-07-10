@@ -1,6 +1,7 @@
 package com.rbac_demo.common;
 
 import com.rbac_demo.annotation.Logical;
+import com.rbac_demo.controller.advice.CustomException;
 import com.rbac_demo.entity.Department;
 import com.rbac_demo.entity.Employee;
 import org.slf4j.Logger;
@@ -83,7 +84,7 @@ public class PermissionUtils implements ConstantUtils {
         // ********* TIP: 数据库中没有Employee 没有 depRank 和 jobRank的信息，请务必这里查到了这两个的信息
         if (employee.getDepRank() == null || employee.getJobRank() == null || employee1.getDepRank() == null || employee1.getJobRank() == null) {
             log.warn("请确认比对的两个Employee 都注入了JOB RANK 和 DEP RANK !!!!!!");
-            return false;
+            throw new CustomException("请确认比对的两个Employee 都注入了JOB RANK 和 DEP RANK !!!!!!");
         }
         return (intComp(employee.getDepRank(), employee1.getDepRank(), CMP.LESS) || Objects.equals(employee.getDepartmentId(), employee1.getDepartmentId()) && checkJobTitleRank(employee.getJobRank(), employee1.getJobRank()));
 

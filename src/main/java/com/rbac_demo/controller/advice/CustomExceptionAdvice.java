@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Controller;
 
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -45,5 +46,13 @@ public class CustomExceptionAdvice {
         log.error(msg);
         return R.error(ex.getMessage());
     }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public R<String> handleArgumentsException(MethodArgumentNotValidException ex) {
+        log.error(ex.getMessage());
+        return R.error("请检查请求参数是否正确!");
+    }
+
+
 
 }

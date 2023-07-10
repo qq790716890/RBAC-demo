@@ -1,6 +1,9 @@
 package com.rbac_demo.entity;
 
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -14,7 +17,9 @@ public class JobTitle implements Serializable {
     private static final long serialVersionUID = 6068470306649138632L;
     private Integer id;
 
+    @NotBlank(message = "职位名称不能为空")
     private String name;
+    @NotNull(message = "职位级别不能为空")
     private Integer rank;    // 职位级别
     private String description; // 部门描述
     private String permissions; // 职位权限, 字符串，逗号分割
