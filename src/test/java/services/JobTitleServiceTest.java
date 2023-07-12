@@ -3,6 +3,7 @@ package services;
 import com.rbac_demo.RbacApplication;
 import com.rbac_demo.common.CommonUtils;
 import com.rbac_demo.common.EmployeeContext;
+import com.rbac_demo.common.RandomUtil;
 import com.rbac_demo.entity.JobTitle;
 import com.rbac_demo.entity.Employee;
 import com.rbac_demo.service.JobTitleService;
@@ -205,6 +206,8 @@ public class JobTitleServiceTest{
     void test_selectAll(){
         int ret = jobTitleService.selectAllCount(null);
         Assertions.assertEquals(14,ret);
+        int ret2 = jobTitleService.selectAllCount(RandomUtil.getRandString());
+        Assertions.assertEquals(0,ret2);
     }
 
 }

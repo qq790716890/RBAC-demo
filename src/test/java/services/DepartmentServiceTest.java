@@ -3,6 +3,7 @@ package services;
 import com.rbac_demo.RbacApplication;
 import com.rbac_demo.common.CommonUtils;
 import com.rbac_demo.common.EmployeeContext;
+import com.rbac_demo.common.RandomUtil;
 import com.rbac_demo.entity.Department;
 import com.rbac_demo.entity.Employee;
 import com.rbac_demo.service.DepartmentService;
@@ -204,6 +205,8 @@ public class DepartmentServiceTest {
     void test_selectAll(){
         int ret = departmentService.selectAllCount(null);
         Assertions.assertEquals(8,ret);
+        int ret2 = departmentService.selectAllCount(RandomUtil.getRandString());
+        Assertions.assertEquals(0,ret2);
     }
 
 

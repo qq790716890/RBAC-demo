@@ -207,6 +207,8 @@ public class EmployeeServiceTest {
     void test_selectAll(){
         int ret = employeeService.selectAllCount(null);
         Assertions.assertEquals(11,ret);
+        int ret2 = employeeService.selectAllCount(RandomUtil.getRandString());
+        Assertions.assertEquals(0,ret2);
     }
 
     @Test
