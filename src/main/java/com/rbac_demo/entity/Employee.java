@@ -26,6 +26,8 @@ public class Employee implements Serializable {
     @NotBlank(message = "员工密码不能为空")
     private String password;
 
+    private String salt;    // 加盐
+
     @NotBlank(message = "员工姓名不能为空")
     private String name;
     @Range(min = 0,max = 1)

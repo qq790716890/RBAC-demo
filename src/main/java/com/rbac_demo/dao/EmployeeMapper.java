@@ -37,4 +37,6 @@ public interface EmployeeMapper {
     int selectAllCount(String name);
 
     Employee selectOneByIdForUpdate(Long id);
+
+    String selectSaltByUserName(String userName);
 }

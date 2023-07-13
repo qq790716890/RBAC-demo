@@ -99,6 +99,11 @@
         where id = #{id}
         for update
     </select>
+    <select id="getPermissionById" resultType="String">
+        select  permissions
+        from job_title
+        where id = #{id}
+    </select>
 
 
 </mapper>

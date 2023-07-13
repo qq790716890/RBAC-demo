@@ -1,6 +1,7 @@
 package com.rbac_demo.service;
 
 
+import com.rbac_demo.common.PermissionUtils;
 import com.rbac_demo.dao.JobTitleMapper;
 
 import com.rbac_demo.entity.JobTitle;
@@ -24,6 +25,10 @@ public class JobTitleService {
 
     public List<JobTitle> selectByPage(int limit, int offset, String name){
         return jobTitleMapper.selectByPage(limit,offset,name==null?null:"%"+name+"%");
+    }
+
+    public String[] getPermissionById(int id) {
+        return PermissionUtils.string2Arr(jobTitleMapper.getPermissionById(id));
     }
 
 

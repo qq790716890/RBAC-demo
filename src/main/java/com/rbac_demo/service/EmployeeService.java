@@ -10,7 +10,10 @@ import com.rbac_demo.dao.JobTitleMapper;
 import com.rbac_demo.entity.Department;
 import com.rbac_demo.entity.Employee;
 import com.rbac_demo.entity.JobTitle;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +23,11 @@ import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -41,6 +48,14 @@ public class EmployeeService {
     @Autowired
     private DepartmentMapper departmentMapper;
 
+    public Collection<? extends GrantedAuthority> getAuthorities(Employee employee) {
+        String[] permissions = employee.getPermissions();
+        List<GrantedAuthority> authorities = Arrays.stream(permissions)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+
+        return authorities;
+    }
 
     public Employee findEmployeeByUserName(String userName) {
         return employeeMapper.findEmployeeByUserName(userName);
@@ -103,5 +118,9 @@ public class EmployeeService {
 
     public Employee selectOneByIdForUpdate(Long id) {
         return employeeMapper.selectOneByIdForUpdate(id);
+    }
+
+    public String selectSaltByUserName(String userName) {
+        return employeeMapper.selectSaltByUserName(userName);
     }
 }

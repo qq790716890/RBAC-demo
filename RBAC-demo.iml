@@ -18,7 +18,7 @@
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
         <datasource-mapping>
-          <factory-entry name="RBAC-demo" />
+          <factory-entry name="RBAC-demo" value="6b9ea1f8-f511-45aa-8ab1-8e6830dcc535" />
         </datasource-mapping>
         <naming-strategy-map />
       </configuration>
@@ -121,6 +121,11 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.xmlunit:xmlunit-core:2.8.4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.12.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mockito:mockito-inline:3.12.4" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-security:2.6.6" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-config:5.6.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-core:5.6.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-crypto:5.6.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-web:5.6.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.jacoco:org.jacoco.agent:0.8.10" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.13.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:2.2" level="project" />

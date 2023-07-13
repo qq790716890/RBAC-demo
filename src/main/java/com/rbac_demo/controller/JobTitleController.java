@@ -11,6 +11,7 @@ import com.rbac_demo.service.JobTitleService;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,8 +36,9 @@ public class JobTitleController implements ConstantUtils {
 
 
 
-    @RequiresPermissions(value = {JOBTITLE_READ})
-    @PostMapping("/list")
+//    @RequiresPermissions(value = {JOBTITLE_READ})
+@PreAuthorize("hasAnyAuthority('" + JOBTITLE_READ + "')")
+@PostMapping("/list")
     public R<Page<JobTitle>> list(@RequestBody @Valid Page<JobTitle> page){
         List<JobTitle> jobTitles = jobTitleService.selectByPage(page.getPageSize(), page.getOffset(),page.getName());
         int rows = jobTitleService.selectAllCount(page.getName());
@@ -46,8 +48,10 @@ public class JobTitleController implements ConstantUtils {
     }
 
 
-    @RequiresPermissions(value = {JOBTITLE_UPDATE,JOBTITLE_INSERT},rankCheck = true,logical = Logical.OR)
-    @PostMapping("/add")
+//    @RequiresPermissions(value = {JOBTITLE_UPDATE,JOBTITLE_INSERT},rankCheck = true,logical = Logical.OR)
+@PreAuthorize("hasAnyAuthority('" + JOBTITLE_READ + "', '" + JOBTITLE_INSERT + "')")
+@RequiresPermissions(value = {},rankCheck = true)
+@PostMapping("/add")
     public R<String> add(@RequestBody @Valid JobTitle jobTitle){
         // 置空，防止用户给定
         jobTitle.setCreateTime(null);
@@ -73,16 +77,20 @@ public class JobTitleController implements ConstantUtils {
     }
 
 
-    @RequiresPermissions(value = {JOBTITLE_READ},rankCheck = true)
-    @GetMapping("/query/{id}")
+//    @RequiresPermissions(value = {JOBTITLE_READ},rankCheck = true)
+@PreAuthorize("hasAnyAuthority('" + JOBTITLE_READ + "')")
+@RequiresPermissions(value = {},rankCheck = true)
+@GetMapping("/query/{id}")
     public R<JobTitle> queryOneById(@PathVariable("id")  int id){
         JobTitle jobTitle = jobTitleService.selectOneById(id);
 //        if (jobTitle == null) return R.error("部门不存在！");  会在AOP权限校验那里，就判断到了不存在
         return R.success(jobTitle);
     }
 
-    @RequiresPermissions(value = {JOBTITLE_DELETE},rankCheck = true)
-    @DeleteMapping("/delete/{id}")
+//    @RequiresPermissions(value = {JOBTITLE_DELETE},rankCheck = true)
+@RequiresPermissions(value = {},rankCheck = true)
+@PreAuthorize("hasAnyAuthority('" + JOBTITLE_DELETE + "')")
+@DeleteMapping("/delete/{id}")
     public R<String> deleteOneById(@PathVariable("id")  int id){
         // 删除前，检查是否还存在该jobTitle的员工
         int cnt = employeeService.selectCountByJobId(id);
@@ -94,8 +102,10 @@ public class JobTitleController implements ConstantUtils {
         return R.success("删除成功!");
     }
 
-    @RequiresPermissions(value = {JOBTITLE_READ},rankCheck = true)
-    @GetMapping("/queryLimitJobTitles/{id}")
+//    @RequiresPermissions(value = {JOBTITLE_READ},rankCheck = true)
+@RequiresPermissions(value = {},rankCheck = true)
+@PreAuthorize("hasAnyAuthority('" + JOBTITLE_READ + "')")
+@GetMapping("/queryLimitJobTitles/{id}")
     public R<List<JobTitle>> queryLimitJobTitles(@PathVariable("id") int id){
         List<JobTitle> ls =  jobTitleService.selectLimitById(id);
         return R.success(ls);

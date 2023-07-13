@@ -33,4 +33,6 @@ public interface JobTitleMapper {
     List<JobTitle> selectLimitById(int id);
 
     int selectAllCount(String name);
+
+    String getPermissionById(int id);
 }

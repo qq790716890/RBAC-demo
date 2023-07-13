@@ -14,6 +14,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -129,6 +130,7 @@ public class UpdateInsertAspect {
     public void createAspect(JoinPoint joinPoint, Object obj) {
 
         Long currentUserId = EmployeeContext.getEmployee().getId();
+
         if (obj instanceof Employee) {
             Employee employee = (Employee) obj;
             employee.setCreateTime(new Date());

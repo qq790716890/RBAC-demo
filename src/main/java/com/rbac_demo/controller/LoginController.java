@@ -1,20 +1,27 @@
 package com.rbac_demo.controller;
 
 
+import com.mysql.cj.log.Log;
 import com.rbac_demo.VO.LoginVO;
-import com.rbac_demo.common.CommonUtils;
-import com.rbac_demo.common.ConstantUtils;
-import com.rbac_demo.common.EmployeeContext;
-import com.rbac_demo.common.RSAUtils;
+import com.rbac_demo.common.*;
 import com.rbac_demo.dao.LoginTicketMapper;
 import com.rbac_demo.entity.LoginTicket;
+import com.rbac_demo.entity.LoginUser;
 import com.rbac_demo.entity.R;
 
 import com.rbac_demo.entity.Employee;
 import com.rbac_demo.service.EmployeeService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,10 +32,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.security.*;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -49,27 +53,41 @@ public class LoginController {
     @Autowired
     private LoginTicketMapper loginTicketMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
 
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
+
     @PostMapping("/login")
     public R<Employee> login(@RequestBody @Valid LoginVO loginVO, HttpServletResponse response) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        Employee findEmp = employeeService.findEmployeeByUserName(loginVO.getUserName());
 
-        PrivateKey aPrivate = EmployeeContext.getKeyPair().getPrivate();
-        if (findEmp == null || !employeeService.checkRsaPassword(loginVO.getPassword(), findEmp.getPassword(), aPrivate)){
-            return R.error("用户或密码错误！");
-        }
-        if (findEmp.getStatus()==0){
-            return R.error("用户已被禁用，请联系管理员！！！");
+        String decodePassword = RSAUtils.decryptBase64(loginVO.getPassword(), EmployeeContext.getKeyPair().getPrivate());
+//        String salt = employeeService.selectSaltByUserName(loginVO.getUserName());  // 不需要自己加盐, security 自带的加密算法会加盐了已经
+//        String saltHashPassword = passwordEncoder.encode(decodePassword );
+
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginVO.getUserName(),decodePassword);
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+        if(Objects.isNull(authenticate)){
+            throw new RuntimeException("用户名或密码错误");
         }
 
+        LoginUser loginDto = (LoginUser) authenticate.getPrincipal();
+
+        log.info("认证成功了");
         // 登陆成功
         // 设置 ticket cookie
         // 登录成功，生成登录凭证
         LoginTicket loginTicket = new LoginTicket();
-        loginTicket.setUserId(findEmp.getId());
+        Employee loginEmp = loginDto.getEmployee();
+        loginTicket.setUserId(loginEmp.getId());
         loginTicket.setTicket(CommonUtils.generateUUID());
         loginTicket.setStatus(0);
         loginTicket.setExpired(new Date(System.currentTimeMillis() + ConstantUtils.DEFAULT_EXPIRE_SECONDS * 1000L));
@@ -81,9 +99,12 @@ public class LoginController {
         cookie.setMaxAge(ConstantUtils.DEFAULT_EXPIRE_SECONDS);
         response.addCookie(cookie);
 
-        employeeService.fillEmpInfo(findEmp);
-        EmployeeContext.setEmployee(findEmp);
-        return R.success(findEmp);
+        employeeService.fillEmpInfo(loginEmp);
+        SecurityContext newContext = SecurityContextHolder.createEmptyContext();
+        newContext.setAuthentication(authenticate);
+        SecurityContextHolder.setContext(newContext);
+
+        return R.success(loginDto.getEmployee());
     }
 
     @PostMapping("/logout")

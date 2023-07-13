@@ -8,7 +8,7 @@
         id, user_name, password, name, status,department_id, job_title_id, create_time, create_user_id,update_time,update_user_id
     </sql>
     <sql id="insertFields">
-        user_name, password, name, status,department_id, job_title_id, create_time, create_user_id,update_time,update_user_id
+        user_name, password , name, status,department_id, job_title_id, create_time, create_user_id,update_time,update_user_id
     </sql>
 
     <!-- keyProperty="id"   会在插入后，主动把自增主键即id的值，回写至 Employee 中 -->
@@ -23,6 +23,7 @@
             <trim suffixOverrides=",">
                 <if test="userName != null">user_name = #{userName},</if>
                 <if test="password != null">password = #{password},</if>
+                <if test="salt != null">salt = #{salt},</if>
                 <if test="name != null">name = #{name},</if>
                 <if test="status != null">status = #{status},</if>
                 <if test="departmentId != null">department_id = #{departmentId},</if>
@@ -115,5 +116,6 @@
         where id = #{id}
         for update
     </select>
+
 
 </mapper>
